@@ -6,13 +6,11 @@ require '../Slim/Slim.php';
 
 $app = new \Slim\Slim();
 
-$version = "v1"
-
 // POST METHODS
-$app->post($version .'/auth/login', function () use ($app) {
+$app->post('/auth/login', function () use ($app) {
 	$host_name  = "db591872347.db.1and1.com";
-	$database   = "db591872347";
-	$user_name  = "dbo591872347";
+	$database   = "wrestlechat";
+	$user_name  = "root";
 	$password   = "1Drizzydrake!";
 	$connection = mysqli_connect($host_name, $user_name, $password, $database);
 	if (mysqli_connect_errno()){
@@ -40,7 +38,7 @@ $app->post($version .'/auth/login', function () use ($app) {
 $app->post($version .'/events', function () use ($app) {
 	$host_name  = "db591872347.db.1and1.com";
 	$database   = "db591872347";
-	$user_name  = "dbo591872347";
+	$user_name  = "root";
 	$password   = "1Drizzydrake!";
 	$connection = mysqli_connect($host_name, $user_name, $password, $database);
 	if (mysqli_connect_errno()){
@@ -66,7 +64,7 @@ $app->post($version .'/events', function () use ($app) {
 $app->post($version .'/messages', function () use ($app) {
 	$host_name  = "db591872347.db.1and1.com";
 	$database   = "db591872347";
-	$user_name  = "dbo591872347";
+	$user_name  = "root";
 	$password   = "1Drizzydrake!";
 	$connection = mysqli_connect($host_name, $user_name, $password, $database);
 	if (mysqli_connect_errno()){
@@ -91,7 +89,7 @@ $app->post($version .'/messages', function () use ($app) {
 // $app->post($version .'/user/edit', function () use ($app) {
 // 	$host_name  = "db591872347.db.1and1.com";
 // 	$database   = "db591872347";
-// 	$user_name  = "dbo591872347";
+// 	$user_name  = "root";
 // 	$password   = "1Drizzydrake!";
 // 	$connection = mysqli_connect($host_name, $user_name, $password, $database);
 // 	if (mysqli_connect_errno()){
