@@ -25,18 +25,4 @@
 	}
 	echo json_encode($response);
 
-	// if ($result->num_rows > 0) {
- //    	// output data of each row
- //    	while($row = $result->fetch_assoc()) {
- //        	echo "id: " . $row["id"]. " - Name: " . $row["username"]. " " . $row["password"]. "<br>";
- //    	}
-	// } else {
- //    	echo "0 results";
-	// }
-
-	// $rows = array("success" => $success, "reason" => $error);
-	// while($r = mysqli_fetch_assoc($sql)) {
-    	// $rows[] = $r;
-	// }
-	// echo json_encode($rows);
 ?>

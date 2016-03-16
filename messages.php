@@ -8,7 +8,9 @@
 	    echo "Failed to connect to MySQL: " . mysqli_connect_error();
 	}
 
-	$sql = "SELECT * FROM events";
+	$event_id = $_POST["event_id"];
+
+	$sql = "SELECT * FROM messages WHERE event_id = '$event_id'";
 
 	$result = $conn->query($sql);
 
@@ -24,19 +26,4 @@
 		$response["status"] = false;
 	}
 	echo json_encode($response);
-
-	// if ($result->num_rows > 0) {
- //    	// output data of each row
- //    	while($row = $result->fetch_assoc()) {
- //        	echo "id: " . $row["id"]. " - Name: " . $row["username"]. " " . $row["password"]. "<br>";
- //    	}
-	// } else {
- //    	echo "0 results";
-	// }
-
-	// $rows = array("success" => $success, "reason" => $error);
-	// while($r = mysqli_fetch_assoc($sql)) {
-    	// $rows[] = $r;
-	// }
-	// echo json_encode($rows);
 ?>
