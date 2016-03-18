@@ -10,7 +10,9 @@ CREATE TABLE users(
 
 CREATE TABLE events( 
 	id INT NOT NULL AUTO_INCREMENT, 
-	name VARCHAR(30) NOT NULL, 
+	name VARCHAR(30) NOT NULL,
+	info VARCHAR(500) NOT NULL,
+	image VARCHAR(70) NOT NULL,
 	location VARCHAR(30) NOT NULL, 
 	start_time TIMESTAMP NOT NULL, 
 	end_time TIMESTAMP NOT NULL,
@@ -30,7 +32,7 @@ CREATE TABLE messages(
 
 INSERT INTO users(username, email, password) VALUES ("JaySyko", "jay@jaysyko.com", "password");
 
-INSERT INTO events(name, location, start_time, end_time, match_card) 
-VALUES ("Monday Night RAW", "Toronto, Ontario", now(), now(), "TBA");
+INSERT INTO events(name, info, image, location, start_time, end_time, match_card) 
+VALUES ("Monday Night RAW", "A 3 Hour Shit Show","Mpk5lUg.jpg","Toronto, Ontario", now(), now(), "TBA");
 
 INSERT INTO messages(event_ID, user_id, body) VALUES ((SELECT id FROM events WHERE id = 1), (SELECT id FROM users WHERE id = 1), 'LMFAOO for real!?');

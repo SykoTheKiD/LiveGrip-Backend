@@ -7,7 +7,7 @@
 	if (mysqli_connect_errno()){
 	    echo "Failed to connect to MySQL: " . mysqli_connect_error();
 	}
-
+	header('Content-Type: application/json');
 	$user_username = $_POST["username"];
 	$user_password = $_POST["password"];
 	$user_email = $_POST["email"];
@@ -24,6 +24,6 @@
     	$error = $connection->error;
 	}
 
-	$rows = array("success" => $success, "reason" => $error);
+	$rows = array("success" => $success, "payload" => $error);
 	echo json_encode($rows);
 ?>
