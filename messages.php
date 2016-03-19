@@ -10,7 +10,7 @@
 	header('Content-Type: application/json');
 	$event_id = $_POST["event_id"];
 
-	$sql = "SELECT u.username, m.body, e.name FROM users u, events e, messages m WHERE m.user_id = u.id AND m.event_id = '$event_id' AND e.id = '$event_id'";
+	$sql = "SELECT u.username, u.profile_image, m.body, e.name FROM users u, events e, messages m WHERE m.user_id = u.id AND m.event_id = '$event_id' AND e.id = '$event_id'";
 
 	$result = $conn->query($sql);
 
