@@ -3,6 +3,7 @@ language: php
 php:
   - 5.5
   - 5.6
-  
+ 
 notifications:
-	slack: livegrip:kOaXoIv0Y9o6wyTBQLgATmRI
+  email: false
+  slack: livegrip:kOaXoIv0Y9o6wyTBQLgATmRI
