@@ -1,0 +1,9 @@
+language: php
+
+php:
+  # using major version aliases
+  - 5.5
+  - 5.6
+
+notifications:
+	slack: livegrip:kOaXoIv0Y9o6wyTBQLgATmRI
