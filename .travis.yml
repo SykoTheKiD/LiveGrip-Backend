@@ -1,9 +1,16 @@
 language: php
 
+dist: precise
+
 php:
   - 5.5
   - 5.6
- 
+
+script: phpunit tests/SampleTest
+
+before_install:
+  - composer self-update
+
 notifications:
   email: false
   slack: livegrip:kOaXoIv0Y9o6wyTBQLgATmRI
