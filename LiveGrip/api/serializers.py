@@ -4,17 +4,16 @@ from models import *
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
-		fields = ('username', 'password')
-
+		fields = '__all__'
 
 
 class EventSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Event
-		fields = ('name', 'info', 'image', 'location', 'start_time', 'end_time', 'match_card')
+		fields = '__all__'
 
 
 class MessageSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Message
-		fields = ('body')
+		fields = '__all__'
