@@ -5,10 +5,19 @@ from rest_framework.response import Response
 from api.models import Event, Message, User
 from api.serializers import EventSerializer
 
+from django.http import HttpResponse
+
+@api_view(['GET'])
+def home(request):
+    """
+    Home
+    """
+    return HttpResponse('API Backend')
+
 @api_view(['POST'])
 def sign_up(request):
     """
-    List all tasks, or create a new task.
+    Create a new User
     """
     serializer = UserSerializer(data=request.DATA)
     if serializer.is_valid():
@@ -21,7 +30,7 @@ def sign_up(request):
 @api_view(['POST'])
 def login(request, username, password):
     """
-    List all tasks, or create a new task.
+    Login a new User
     """
     try:
     	user = User.objects.get(username=username, password=password)
@@ -34,7 +43,7 @@ def login(request, username, password):
 @api_view(['GET', 'POST'])
 def events(request):
     """
-    List all tasks, or create a new task.
+    List all the Events
     """
     if request.method == 'GET':
         events = Event.objects.all()
@@ -54,7 +63,7 @@ def events(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 def messages(request, event_id):
     """
-    List all tasks, or create a new task.
+    List all messages given a certain event
     """
     if request.method == 'GET':
         events = Event.objects.get(event_id=event_id)

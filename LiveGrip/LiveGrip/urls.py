@@ -2,6 +2,7 @@ from django.conf.urls import url
 from django.contrib import admin
 
 urlpatterns = [
+	url(r'^', 'api.views.home', name='home'),
     url(r'^admin/', admin.site.urls),
     url(r'^auth/login', 'api.views.login', name='login'),
 	url(r'^auth/sign_up', 'api.views.sign_up', name='sign_up'),
