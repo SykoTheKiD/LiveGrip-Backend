@@ -2,8 +2,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from models import *
-from serializers import *
+from api.models import Event, Message, User
+from api.serializers import EventSerializer
 
 @api_view(['POST'])
 def sign_up(request):
@@ -52,17 +52,17 @@ def events(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def message(request, event_id):
+def messages(request, event_id):
     """
     List all tasks, or create a new task.
     """
     if request.method == 'GET':
         events = Event.objects.get(event_id=event_id)
-        serializer = EventSerializer(events, many=True)
+        serializer = MessageSerializer(events, many=True)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = EventSerializer(data=request.DATA)
+        serializer = MessageSerializer(data=request.DATA)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

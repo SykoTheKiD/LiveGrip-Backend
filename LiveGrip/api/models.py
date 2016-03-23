@@ -4,6 +4,10 @@ from django.db import models
 
 # Create your models here.
 class User(models.Model):
+
+	class Meta:
+		db_table = 'users'
+
 	username = models.CharField(max_length=30, null=False)
 	password = models.CharField(max_length=200, null=False)
 	email = models.CharField(max_length=50)
@@ -12,6 +16,10 @@ class User(models.Model):
 
 
 class Event(models.Model):
+	
+	class Meta:
+		db_table = 'events'
+	
 	name = models.CharField(max_length=30, null=False)
 	info = models.CharField(max_length=500, null=False)
 	image = models.CharField(max_length=70, null=False)
@@ -21,6 +29,10 @@ class Event(models.Model):
 	match_card = models.TextField(default="TBA")
 
 class Message(models.Model):
+
+	class Meta:
+		db_table = 'messages'
+
 	event_id = models.ForeignKey(Event, verbose_name="the related event")
 	user_id = models.ForeignKey(User, verbose_name="message's user")
 	body = models.TextField()
