@@ -66,7 +66,7 @@ def messages(request, event_id):
     List all messages given a certain event
     """
     if request.method == 'GET':
-        events = Event.objects.get(event_id=event_id)
+        events = Event.objects.select_related(event_id=1)
         serializer = MessageSerializer(events, many=True)
         return Response(serializer.data)
 
