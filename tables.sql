@@ -1,8 +1,8 @@
 CREATE TABLE users(
 	id INT NOT NULL AUTO_INCREMENT,
-	username VARCHAR(30) NOT NULL,
+	username VARCHAR(30) NOT NULL UNIQUE,
 	password VARCHAR(200) NOT NULL,
-	email VARCHAR(50),
+	email VARCHAR(50) UNIQUE DEFAULT null,
 	profile_image VARCHAR(300),
 	email_verified BOOLEAN DEFAULT false,
 	PRIMARY KEY(id)

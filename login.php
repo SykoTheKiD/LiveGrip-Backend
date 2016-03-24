@@ -1,17 +1,9 @@
 <?php
-	$host_name  = "vagrant-ubuntu-trusty-64";
-	$database   = "wrestlechat";
-	$user_name  = "root";
-	$password   = "pass";
-	$conn = mysqli_connect($host_name, $user_name, $password, $database);
-	if (mysqli_connect_errno()){
-	    echo "Failed to connect to MySQL: " . mysqli_connect_error();
-	}
-	header('Content-Type: application/json');
-	$user_username = $_POST["username"];
-	$user_password = $_POST["password"];
-
-	$sql = "SELECT * FROM users WHERE username = '$user_username' AND password = '$user_password'";
+	require 'config.php';
+	$user_username = $_POST[$USERNAME_KEY];
+	$user_password = $_POST[$PASSWORD_KEY];
+	
+	$sql = "SELECT * FROM users WHERE username = '$user_username' AND password = '$user_password' LIMIT 1";
 
 	$result = $conn->query($sql);
 

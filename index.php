@@ -1,13 +1,5 @@
 <?php
-	$host_name  = "vagrant-ubuntu-trusty-64";
-	$database   = "wrestlechat";
-	$user_name  = "root";
-	$password   = "pass";
-	$conn = mysqli_connect($host_name, $user_name, $password, $database);
-	if (mysqli_connect_errno()){
-	    echo "Failed to connect to MySQL: " . mysqli_connect_error();
-	}
-
+	require('config.php');
 	$sql = "SELECT * FROM events";
 
 	$result = $conn->query($sql);
