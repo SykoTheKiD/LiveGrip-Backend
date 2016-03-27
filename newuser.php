@@ -2,8 +2,9 @@
 	require 'config.php';
 	$user_username = $_POST[$USERNAME_KEY];
 	$user_password = $_POST[$PASSWORD_KEY];
+	$user_gcmID = $_POST[$GCM_ID_KEY];
 
-	$sql = "INSERT INTO users (username, password) VALUES ('$user_username', '$user_password')";
+	$sql = "INSERT INTO users (username, password, gcm_id) VALUES ('$user_username', '$user_password', '$user_gcmID')";
 
 	$success = null;
 	$error = null;
