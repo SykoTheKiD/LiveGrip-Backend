@@ -11,5 +11,6 @@ header('Content-Type: application/json');
 
 $USERNAME_KEY = "username";
 $PASSWORD_KEY = "password";
+$GCM_ID_KEY = "gcm_id";
 
 ?>
