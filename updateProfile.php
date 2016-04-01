@@ -1,12 +1,11 @@
 <?php
 	require 'config.php';
 	$user_username = $_POST[$USERNAME_KEY];
-	$user_password = $_POST[$PASSWORD_KEY];
 	$user_image = $_POST["profile_image"];
 
-	if($user_username != null && $user_password != null){
+	if($user_username != null && $user_image != null){
 
-		$sql = "INSERT INTO users (username, password, profile_image) VALUES ('$user_username', '$user_password', '$user_image')";
+		$sql = "UPDATE users SET profile_image='$user_image' WHERE username='$user_username'";
 
 		$success = null;
 		$error = null;

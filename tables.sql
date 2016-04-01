@@ -5,6 +5,7 @@ CREATE TABLE users(
 	email VARCHAR(50) UNIQUE DEFAULT null,
 	profile_image VARCHAR(300),
 	email_verified BOOLEAN DEFAULT false,
+	gcm_id TEXT,
 	PRIMARY KEY(id)
 );
 
