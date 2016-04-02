@@ -6,6 +6,7 @@ CREATE TABLE users(
 	profile_image VARCHAR(300),
 	email_verified BOOLEAN DEFAULT false,
 	gcm_id TEXT,
+	app_version VARCHAR(10),
 	PRIMARY KEY(id)
 );
 

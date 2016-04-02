@@ -1,5 +1,5 @@
 <?php
-	require 'config.php';
+	require '../config.php';
 	$event_id = $_POST["event_id"];
 	$user_id = $_POST["user_id"];
 	$body = $_POST["body"];
