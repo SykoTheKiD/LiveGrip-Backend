@@ -1,6 +1,6 @@
 <?php
 $host_name  = "localhost";
-$database   = "livegrip";
+$database   = "wrestlechat";
 $user_name  = "root";
 $password   = "1Drizzydrake";
 $conn = mysqli_connect($host_name, $user_name, $password, $database);

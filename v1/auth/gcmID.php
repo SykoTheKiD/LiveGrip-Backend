@@ -1,5 +1,5 @@
 <?php
-	require 'config.php';
+	require '../config.php';
 	$user_username = $_POST[$USERNAME_KEY];
 	$user_gcmID = $_POST["gcm_id"];
 

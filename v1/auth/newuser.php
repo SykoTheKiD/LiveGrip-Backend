@@ -1,6 +1,5 @@
 <?php
 	require '../config.php';
-
 	$user_username = $_POST[$USERNAME_KEY];
 	$user_password = $_POST[$PASSWORD_KEY];
 	$user_image = $_POST["profile_image"];

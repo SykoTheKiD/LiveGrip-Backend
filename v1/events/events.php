@@ -1,5 +1,5 @@
 <?php
-	require 'config.php';
+	require '../config.php';
 	$rows = array();
 	$response = array("success" => null, "payload" => $rows);
 	$sql = "SELECT * FROM events";
