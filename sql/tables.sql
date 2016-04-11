@@ -1,12 +1,10 @@
 CREATE TABLE users(
 	id INT NOT NULL AUTO_INCREMENT,
-	username VARCHAR(30) NOT NULL UNIQUE,
+	username VARCHAR(30) NOT NULL,
 	password VARCHAR(200) NOT NULL,
-	email VARCHAR(50) UNIQUE DEFAULT null,
+	email VARCHAR(50),
 	profile_image VARCHAR(300),
 	email_verified BOOLEAN DEFAULT false,
-	gcm_id TEXT,
-	app_version VARCHAR(10),
 	PRIMARY KEY(id)
 );
 
