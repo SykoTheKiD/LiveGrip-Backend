@@ -22,12 +22,12 @@ def sign_up(request):
     """
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
-    	username = serializer.validated_data['username']
-        password = serializer.validated_data['password']
-        # serializer.set_password(password)
-        response = Response(serializer.validated_data, status=status.HTTP_201_CREATED)
-        serializer.save()
-    	return response
+    	# username = serializer.validated_data['username']
+        # password = serializer.validated_data['password']
+        # serializer.set_password(passwosssfsdfasfrd)
+        # serializer.save()
+        serializer.create(serializer.validated_data)
+    	return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
     else:
         return Response(
             serializer.errors, status=status.HTTP_400_BAD_REQUEST)
