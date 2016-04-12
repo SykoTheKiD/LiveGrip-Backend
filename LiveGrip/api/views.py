@@ -22,10 +22,6 @@ def sign_up(request):
     """
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
-    	# username = serializer.validated_data['username']
-        # password = serializer.validated_data['password']
-        # serializer.set_password(passwosssfsdfasfrd)
-        # serializer.save()
         serializer.create(serializer.validated_data)
     	return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
     else:
@@ -33,16 +29,19 @@ def sign_up(request):
             serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
-def login(request, username, password):
+def login_user(request):
     """
     Login a new User
     """
-    user = authenticate(username=username, password=password)
+    user = authenticate(username=request.data['username'], password=request.data['password'])
     if user is not None:
         if user.is_active:
-            login(request, user);
-    serializer = UserSerializer(user)
-    return Response(serializer.data)
+            login(request, user)
+            return HttpResponse('user_logged_in')
+        else:
+            return HttpResponse('user_banned')
+    else:
+        return HttpResponse('user_not_found')
 
 
 @api_view(['GET', 'POST'])
@@ -56,7 +55,7 @@ def events(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = EventSerializer(data=request.DATA)
+        serializer = EventSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

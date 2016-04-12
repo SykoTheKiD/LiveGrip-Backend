@@ -7,4 +7,5 @@ from api.models import User
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'username', 'password', 'profile_image', 'email', 'last_login', 'is_active', 'date_joined')
+    
 admin.site.register(User, UserAdmin)
