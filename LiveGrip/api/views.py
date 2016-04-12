@@ -75,7 +75,7 @@ def messages(request, event_id):
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = MessageSerializer(data=request.DATA)
+        serializer = MessageSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
