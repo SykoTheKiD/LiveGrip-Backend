@@ -8,6 +8,13 @@ from api.serializers import EventSerializer, UserSerializer
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 
+# Constants
+STATUS = 'status'
+DATA = 'data'
+SUCCESS = 'success'
+FAIL = 'fail'
+JSON_RESPONSE = {STATUS: None, DATA: None}
+
 @api_view(['GET'])
 def home(request):
     """
@@ -23,10 +30,13 @@ def sign_up(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         serializer.create(serializer.validated_data)
-    	return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+        JSON_RESPONSE[STATUS] = SUCCESS
+        JSON_RESPONSE[DATA] = serializer.validated_data
+    	return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
     else:
-        return Response(
-            serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        JSON_RESPONSE[STATUS] = FAIL
+        JSON_RESPONSE[DATA] = serializer.errors
+        return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def login_user(request):
@@ -37,11 +47,16 @@ def login_user(request):
     if user is not None:
         if user.is_active:
             login(request, user)
-            return HttpResponse('user_logged_in')
+            JSON_RESPONSE[STATUS] = SUCCESS
+            return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
         else:
-            return HttpResponse('user_banned')
+            JSON_RESPONSE[STATUS] = FAIL
+            JSON_RESPONSE[DATA] = "Account has been disabled"
+            return Response(JSON_RESPONSE, status=statusHTTP_401_UNAUTHORIZED)
     else:
-        return HttpResponse('user_not_found')
+        JSON_RESPONSE[STATUS] = FAIL
+        JSON_RESPONSE[DATA] = "User not found"
+        return Response(JSON_RESPONSE, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET', 'POST'])
@@ -52,36 +67,48 @@ def events(request):
     if request.method == 'GET':
         events = Event.objects.all()
         serializer = EventSerializer(events, many=True)
-        return Response(serializer.data)
+        JSON_RESPONSE[STATUS] = SUCCESS
+        JSON_RESPONSE[DATA] = serializer.validated_data
+        return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
         serializer = EventSerializer(data=request.data)
         if serializer.is_valid():
+            JSON_RESPONSE[STATUS] = SUCCESS
+            JSON_RESPONSE[DATA] = serializer.validated_data
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
         else:
-            return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            JSON_RESPONSE[STATUS] = FAIL
+            JSON_RESPONSE[DATA] = serializer.errors
+            return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET', 'POST'])
 def messages(request, event_id):
     """
     List all messages given a certain event
     """
     if request.method == 'GET':
-        events = Event.objects.select_related(event_id=1)
+        events = Event.objects.select_related(event_id=event_id)
         serializer = MessageSerializer(events, many=True)
-        return Response(serializer.data)
+        if serializer.is_valid():
+            JSON_RESPONSE[STATUS] = SUCCESS
+            JSON_RESPONSE[DATA] = serializer.validated_data
+            return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
+        else:
+            JSON_RESPONSE[STATUS] = FAIL
+            JSON_RESPONSE[DATA] = serializer.errors
+            return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
-    elif request.method == 'PUT':
+    elif request.method == 'POST':
         serializer = MessageSerializer(data=request.data)
         if serializer.is_valid():
+            JSON_RESPONSE[STATUS] = SUCCESS
+            JSON_RESPONSE[DATA] = serializer.validated_data
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
         else:
-            return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-    	pass
+            JSON_RESPONSE[STATUS] = FAIL
+            JSON_RESPONSE[DATA] = serializer.errors
+            return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
