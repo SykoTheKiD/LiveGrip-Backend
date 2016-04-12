@@ -4,9 +4,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
-	profile_image = models.CharField(max_length=300)
-	gcm_id = models.CharField(max_length=500, default="not_set")
-	app_version = models.CharField(max_length=10, default="undefined")
+	profile_image = models.CharField(max_length=300, null=True, default="unset")
+	gcm_id = models.CharField(max_length=500, default="not_set", null=True)
+	app_version = models.CharField(max_length=10, default="undefined", null=True)
 
 class Event(models.Model):
 	
