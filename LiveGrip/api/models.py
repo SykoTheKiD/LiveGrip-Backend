@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
 	profile_image = models.CharField(max_length=300)
 	gcm_id = models.CharField(max_length=500, default="not_set")
+	app_version = models.CharField(max_length=10, default="undefined")
 
 class Event(models.Model):
 	
@@ -13,7 +14,7 @@ class Event(models.Model):
 		db_table = 'events'
 	
 	name = models.CharField(max_length=30, null=False)
-	info = models.CharField(max_length=500, null=False)
+	info = models.TextField(default=None)
 	image = models.CharField(max_length=70, null=False)
 	location = models.CharField(max_length=30, null=False)
 	start_time = models.DateTimeField()
