@@ -1,15 +1,28 @@
-language: php
+language: python
 
-dist: precise
+sudo: required
 
-php:
-  - 5.5
-  - 5.6
-
-script: phpunit tests/SampleTest
+python:
+  - "2.7"
 
 before_install:
-  - composer self-update
+  - ./build.sh -b travis
+  - cd LiveGrip/
+
+services:
+  - mysql
+
+install:
+  - pip install -r requirements.txt
+
+before_script:
+  - mysql -e 'create database livegrip;'
+
+script: python manage.py test
+
+after_script:
+  - cd ..
+  - ./build.sh -l digitalocean
 
 notifications:
   email: false

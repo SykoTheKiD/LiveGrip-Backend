@@ -8,12 +8,22 @@ class UserSerializer(serializers.ModelSerializer):
 		fields = ('username', 'profile_image', 'is_active')
 
 	def create(self, validated_data):
-		username = validated_data['username']
-		user = User(username=username)
-		user.set_password(validated_data['password'])
-		user.profile_image = validated_data['profile_image']
-		user.save()
-		return user
+		user = None
+		try:
+			username = validated_data['username']
+			password = validated_data['password']
+			user = User(username=username)
+			user.set_password(password)
+			try:
+				profile_image = validated_data['profile_image']
+				user.profile_image = profile_image
+			except KeyError:
+				user.profile_image = "DEFAULT"
+			user.save()
+			return user
+		except KeyError:
+			return user
+			
 
 class EventSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -24,4 +34,4 @@ class EventSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Message
-		fields = ('body')
+		fields = '__all__'
