@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from models import Event, User
+from models import Event, User, Message
 
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -21,7 +21,7 @@ class EventSerializer(serializers.ModelSerializer):
 		fields = ('name', 'info', 'image', 'location', 'start_time', 'end_time', 'match_card')
 
 
-# class MessageSerializer(serializers.ModelSerializer):
-# 	class Meta:
-# 		model = Message
-# 		fields = ('body')
+class MessageSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Message
+		fields = ('body')
