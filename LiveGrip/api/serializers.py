@@ -1,18 +1,16 @@
-from django.contrib.auth.models import User
-
 from rest_framework import serializers
 
-from models import *
+from models import Event, User
 
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
-		fields = '__all__'
-
+		fields = ('username', 'password', 'profile_image', 'is_active')
 	def create(self, validated_data):
-		username=validated_data['username']
+		username = validated_data['username']
 		user = User(username=username)
 		user.set_password(validated_data['password'])
+		user.profile_image = validated_data['profile_image']
 		user.save()
 		return user
 

@@ -47,16 +47,9 @@ def login_user(request):
     user = authenticate(username=request.data['username'], password=request.data['password'])
     if user is not None:
         if user.is_active:
-            login(request, user)
             JSON_RESPONSE[STATUS] = SUCCESS
-            # JSON_RESPONSE[DATA] = serializer.validated_data
+            JSON_RESPONSE[DATA] = {'username':user.username, 'profile_image': user.profile_image, 'is_active': user.is_active}
             return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
-            # if serializer.is_valid():
-        
-            # else:
-            #     JSON_RESPONSE[STATUS] = FAIL
-            #     JSON_RESPONSE[DATA] = "Broken Data"
-            #     return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
         else:
             JSON_RESPONSE[STATUS] = FAIL
             JSON_RESPONSE[DATA] = "Account has been disabled"
