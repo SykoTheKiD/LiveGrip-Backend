@@ -30,7 +30,7 @@ def sign_up(request):
     """
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.create(serializer.validated_data)
+        serializer.create(request.data)
         JSON_RESPONSE[STATUS] = SUCCESS
         JSON_RESPONSE[DATA] = serializer.validated_data
     	return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)

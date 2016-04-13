@@ -5,7 +5,8 @@ from models import Event, User
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
-		fields = ('username', 'password', 'profile_image', 'is_active')
+		fields = ('username', 'profile_image', 'is_active')
+
 	def create(self, validated_data):
 		username = validated_data['username']
 		user = User(username=username)
