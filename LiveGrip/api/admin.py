@@ -66,7 +66,10 @@ class EventAdmin(admin.ModelAdmin):
 	publish.short_description = "Make Selected Events Available to Public"
 	actions = [publish, duplicateEvent]
 
+class MessageAdmin(admin.ModelAdmin):
+	list_display = [field.name for field in Message._meta.fields]
+
 ## Regsiter to Admin
 admin.site.register(User, UserAdmin)
 admin.site.register(Event, EventAdmin)
-admin.site.register(Message)
+admin.site.register(Message, MessageAdmin)
