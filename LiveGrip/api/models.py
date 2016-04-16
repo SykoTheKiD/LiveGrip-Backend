@@ -39,6 +39,6 @@ class Message(models.Model):
 	class Meta:
 		db_table = 'messages'
 
-	event_id = models.ForeignKey(Event, verbose_name="the related event")
-	user_id = models.ForeignKey(User, verbose_name="message's user")
-	body = models.TextField()
+	event_id = models.ForeignKey(Event, verbose_name="event")
+	user_id = models.ForeignKey(User, verbose_name="message user")
+	body = models.TextField(verbose_name='message')
