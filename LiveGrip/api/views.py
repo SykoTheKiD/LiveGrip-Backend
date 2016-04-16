@@ -107,7 +107,7 @@ def events(request):
         return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
 @api_view(['GET', 'POST'])
-def messages(request, event_id):
+def messages(request):
     """
     List all messages given a certain event
     """
