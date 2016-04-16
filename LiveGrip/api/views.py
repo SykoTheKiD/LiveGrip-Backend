@@ -102,11 +102,16 @@ def events(request):
     List all the Events
     """
     if request.method == 'GET':
-        events = Event.objects.all()
+        events = Event.objects.get(status='p')
         serializer = EventSerializer(events, many=True)
-        JSON_RESPONSE[STATUS] = SUCCESS
-        JSON_RESPONSE[DATA] = serializer.validated_data
-        return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
+        if serializer.is_valid():
+            JSON_RESPONSE[STATUS] = SUCCESS
+            JSON_RESPONSE[DATA] = serializer.validated_data
+            return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
+        else:
+            JSON_RESPONSE[STATUS] = FAIL
+            JSON_RESPONSE[DATA] = serializer.errors
+            return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'POST':
         serializer = EventSerializer(data=request.data)
