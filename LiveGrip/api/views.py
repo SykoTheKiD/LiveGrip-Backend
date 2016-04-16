@@ -2,12 +2,13 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from api.models import Event, User
-from api.serializers import EventSerializer, UserSerializer
+from api.models import Event, User, Message
+from api.serializers import EventSerializer, UserSerializer, MessageSerializer
 
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import get_object_or_404
 
 # Constants
 STATUS = 'status'
@@ -107,21 +108,24 @@ def events(request):
         return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
 @api_view(['GET', 'POST'])
-def messages(request):
+def messages(request, event_id):
     """
     List all messages given a certain event
     """
     if request.method == 'GET':
-        events = Event.objects.select_related(event_id=event_id)
-        serializer = MessageSerializer(events, many=True)
-        if serializer.is_valid():
-            JSON_RESPONSE[STATUS] = SUCCESS
-            JSON_RESPONSE[DATA] = serializer.validated_data
-            return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
-        else:
-            JSON_RESPONSE[STATUS] = FAIL
-            JSON_RESPONSE[DATA] = serializer.errors
-            return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
+        messages = Message.objects.all()
+        JSON_RESPONSE[STATUS] = SUCCESS
+        JSON_RESPONSE[DATA] = list(Message.objects.filter(event = event_id).values())
+        return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
+        # serializer = MessageSerializer(data=messages, many=True)
+        # if serializer.is_valid():
+        #     JSON_RESPONSE[STATUS] = SUCCESS
+        #     JSON_RESPONSE[DATA] = serializer.validated_data
+        #     return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
+        # else:
+        #     JSON_RESPONSE[STATUS] = FAIL
+        #     JSON_RESPONSE[DATA] = serializer.errors
+        #     return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'POST':
         serializer = MessageSerializer(data=request.data)
