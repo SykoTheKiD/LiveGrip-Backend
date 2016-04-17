@@ -19,7 +19,6 @@ class UserSerializer(serializers.ModelSerializer):
 				user.profile_image = profile_image
 			except KeyError:
 				user.profile_image = "DEFAULT"
-			user.save()
 			return user
 		except KeyError:
 			return user
@@ -34,4 +33,4 @@ class EventSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Message
-		fields = '__all__'
+		fields = ('user', 'event', 'body')

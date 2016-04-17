@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from api.models import Event, User, Message
 from api.serializers import EventSerializer, UserSerializer, MessageSerializer
@@ -107,34 +108,41 @@ def events(request):
         JSON_RESPONSE[DATA] = list(Event.objects.filter(status = 'p').values('name', 'info', 'image','location', 'start_time', 'end_time', 'match_card'))
         return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
-@api_view(['GET', 'POST'])
-def messages(request, event_id):
-    """
-    List all messages given a certain event
-    """
-    if request.method == 'GET':
+class MessageList(APIView):
+    def get(self, request, event_id):
         messages = Message.objects.all()
-        JSON_RESPONSE[STATUS] = SUCCESS
-        JSON_RESPONSE[DATA] = list(Message.objects.filter(event = event_id).values())
-        return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
-        # serializer = MessageSerializer(data=messages, many=True)
-        # if serializer.is_valid():
-        #     JSON_RESPONSE[STATUS] = SUCCESS
-        #     JSON_RESPONSE[DATA] = serializer.validated_data
-        #     return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
-        # else:
-        #     JSON_RESPONSE[STATUS] = FAIL
-        #     JSON_RESPONSE[DATA] = serializer.errors
-        #     return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
+        serializer = MessageSerializer(messages, many=True)
+        return Response(serializer.data)
+            
 
-    elif request.method == 'POST':
-        serializer = MessageSerializer(data=request.data)
-        if serializer.is_valid():
-            JSON_RESPONSE[STATUS] = SUCCESS
-            JSON_RESPONSE[DATA] = serializer.validated_data
-            serializer.save()
-            return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
-        else:
-            JSON_RESPONSE[STATUS] = FAIL
-            JSON_RESPONSE[DATA] = serializer.errors
-            return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
+# @api_view(['GET', 'POST'])
+# def messages(request, event_id):
+#     """
+#     List all messages given a certain event
+#     """
+#     if request.method == 'GET':
+#         messages = Message.objects.all()
+#         # JSON_RESPONSE[STATUS] = SUCCESS
+#         # JSON_RESPONSE[DATA] = serializer.validated_data
+#         # JSON_RESPONSE[DATA] = list(Message.objects.filter(event = event_id).values())
+#         # return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
+#         serializer = MessageSerializer(data=messages, many=True)
+#         JSON_RESPONSE[STATUS] = SUCCESS
+#         JSON_RESPONSE[DATA] = serializer.data
+#         return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
+#         # else:
+#         #     JSON_RESPONSE[STATUS] = FAIL
+#         #     JSON_RESPONSE[DATA] = serializer.errors
+#         #     return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
+
+#     elif request.method == 'POST':
+#         serializer = MessageSerializer(data=request.data)
+#         if serializer.is_valid():
+#             JSON_RESPONSE[STATUS] = SUCCESS
+#             JSON_RESPONSE[DATA] = serializer.validated_data
+#             serializer.save()
+#             return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
+#         else:
+#             JSON_RESPONSE[STATUS] = FAIL
+#             JSON_RESPONSE[DATA] = serializer.errors
+#             return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)

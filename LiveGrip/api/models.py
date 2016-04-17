@@ -42,3 +42,4 @@ class Message(models.Model):
 	event = models.ForeignKey(Event, verbose_name="event")
 	user = models.ForeignKey(User, verbose_name="message user")
 	body = models.TextField(verbose_name='message')
+	created = models.DateTimeField(auto_now_add=True)
