@@ -11,6 +11,9 @@ class User(AbstractUser):
 	gcm_id = models.CharField(max_length=500, default="not_set", null=True)
 	app_version = models.CharField(max_length=10, default="undefined", null=True)
 
+	def __unicode__(self):
+		return self.username
+
 STATUS_CHOICES = (
     ('h', 'Holding'),
     ('p', 'Published')
@@ -39,7 +42,7 @@ class Message(models.Model):
 	class Meta:
 		db_table = 'messages'
 
-	event = models.ForeignKey(Event, verbose_name="event")
+	event = models.ForeignKey(Event, verbose_name="event", on_delete=models.CASCADE)
 	user = models.ForeignKey(User, verbose_name="message user")
 	body = models.TextField(verbose_name='message')
 	created = models.DateTimeField(auto_now_add=True)

@@ -5,7 +5,7 @@ from models import Event, User, Message
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
-		fields = ('username', 'profile_image', 'is_active')
+		fields = ('username', 'profile_image')
 
 	def create(self, validated_data):
 		user = None
@@ -19,6 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
 				user.profile_image = profile_image
 			except KeyError:
 				user.profile_image = "DEFAULT"
+			user.save()
 			return user
 		except KeyError:
 			return user
@@ -27,10 +28,17 @@ class UserSerializer(serializers.ModelSerializer):
 class EventSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Event
-		fields = ('name', 'info', 'image', 'location', 'start_time', 'end_time', 'match_card')
+		fields = ('name', 'info', 'image','location', 'start_time', 'end_time', 'match_card')
 
 
-class MessageSerializer(serializers.ModelSerializer):
+class GetMessageSerializer(serializers.ModelSerializer):
+	user = serializers.StringRelatedField()
+	event = serializers.StringRelatedField()
+	class Meta:
+		model = Message
+		fields = ('user', 'event', 'body')
+
+class SaveMessageSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Message
 		fields = ('user', 'event', 'body')

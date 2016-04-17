@@ -1,28 +1,28 @@
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from api.models import Event, User, Message
-from api.serializers import EventSerializer, UserSerializer, MessageSerializer
+from api.models import *
+from api.serializers import *
 
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import update_last_login
 
 # Constants
 STATUS = 'status'
 DATA = 'data'
 SUCCESS = 'success'
 FAIL = 'fail'
-JSON_RESPONSE = {STATUS: None, DATA: None}
+MESSAGE = 'message'
 
 @api_view(['POST'])
 def sign_up(request):
     """
     Create a new User
     """
+    JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.create(request.data)
@@ -31,7 +31,7 @@ def sign_up(request):
             JSON_RESPONSE[DATA] = serializer.validated_data
             return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
     JSON_RESPONSE[STATUS] = FAIL
-    JSON_RESPONSE[DATA] = serializer.errors
+    JSON_RESPONSE[MESSAGE] = serializer.errors
     return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
@@ -39,20 +39,23 @@ def login_user(request):
     """
     Login a new User
     """ 
+    JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     try:
         user = authenticate(username=request.data['username'], password=request.data['password'])
+        serializer = UserSerializer(user)
         if user is not None:
             if user.is_active:
+                update_last_login(None, user)
                 JSON_RESPONSE[STATUS] = SUCCESS
-                JSON_RESPONSE[DATA] = {'username':user.username, 'profile_image': user.profile_image, 'is_active': user.is_active}
+                JSON_RESPONSE[DATA] = serializer.data
                 return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
             else:
                 JSON_RESPONSE[STATUS] = FAIL
-                JSON_RESPONSE[DATA] = "Account has been disabled"
+                JSON_RESPONSE[MESSAGE] = "Account has been disabled"
                 return Response(JSON_RESPONSE, status=status.HTTP_401_UNAUTHORIZED)
         else:
             JSON_RESPONSE[STATUS] = FAIL
-            JSON_RESPONSE[DATA] = "User not found"
+            JSON_RESPONSE[MESSAGE] = "User not found"
             return Response(JSON_RESPONSE, status=status.HTTP_404_NOT_FOUND)
     except KeyError:
         return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
@@ -62,6 +65,7 @@ def updateGCMID(request):
     """
     Add a GCM ID to the User
     """
+    JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     try:
         username=request.data['username']
         gcm_id = request.data['gcm_id']
@@ -72,6 +76,7 @@ def updateGCMID(request):
             JSON_RESPONSE[STATUS] = SUCCESS
             return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
+            JSON_RESPONSE[MESSAGE] = "User not found"
             return Response(JSON_RESPONSE, status=status.HTTP_404_NOT_FOUND)
     except KeyError:
         return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
@@ -81,6 +86,7 @@ def updateProfileImage(request):
     """
     Update the user's profile image
     """
+    JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     try:
         username=request.data['username']
         profile_image = request.data['profile_image']
@@ -89,60 +95,49 @@ def updateProfileImage(request):
             user.profile_image = profile_image
             user.save()
             JSON_RESPONSE[STATUS] = SUCCESS
-            JSON_RESPONSE[DATA] = None
             return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
         except ObjectDoesNotExist:
             JSON_RESPONSE[STATUS] = FAIL
-            JSON_RESPONSE[STATUS] = None
+            JSON_RESPONSE[MESSAGE] = "User not found"
             return Response(JSON_RESPONSE, status=status.HTTP_404_NOT_FOUND)
     except KeyError:
         return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def events(request):
     """
     List all the Events
     """
+    JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     if request.method == 'GET':
         JSON_RESPONSE[STATUS] = SUCCESS
-        JSON_RESPONSE[DATA] = list(Event.objects.filter(status = 'p').values('name', 'info', 'image','location', 'start_time', 'end_time', 'match_card'))
+        events = Event.objects.filter(status = 'p')
+        serializer = EventSerializer(events, many=True)
+        JSON_RESPONSE[DATA] = serializer.data
         return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
-class MessageList(APIView):
-    def get(self, request, event_id):
-        messages = Message.objects.all()
-        serializer = MessageSerializer(messages, many=True)
-        return Response(serializer.data)
-            
+@api_view(['GET'])
+def messages(request, event_id):
+    """
+    List all messages given a certain event
+    """
+    JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
+    messages = Message.objects.filter(event=event_id)
+    serializer = GetMessageSerializer(messages, many=True)
+    JSON_RESPONSE[STATUS] = SUCCESS
+    JSON_RESPONSE[DATA] = serializer.data
+    return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
-# @api_view(['GET', 'POST'])
-# def messages(request, event_id):
-#     """
-#     List all messages given a certain event
-#     """
-#     if request.method == 'GET':
-#         messages = Message.objects.all()
-#         # JSON_RESPONSE[STATUS] = SUCCESS
-#         # JSON_RESPONSE[DATA] = serializer.validated_data
-#         # JSON_RESPONSE[DATA] = list(Message.objects.filter(event = event_id).values())
-#         # return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
-#         serializer = MessageSerializer(data=messages, many=True)
-#         JSON_RESPONSE[STATUS] = SUCCESS
-#         JSON_RESPONSE[DATA] = serializer.data
-#         return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
-#         # else:
-#         #     JSON_RESPONSE[STATUS] = FAIL
-#         #     JSON_RESPONSE[DATA] = serializer.errors
-#         #     return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
-
-#     elif request.method == 'POST':
-#         serializer = MessageSerializer(data=request.data)
-#         if serializer.is_valid():
-#             JSON_RESPONSE[STATUS] = SUCCESS
-#             JSON_RESPONSE[DATA] = serializer.validated_data
-#             serializer.save()
-#             return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
-#         else:
-#             JSON_RESPONSE[STATUS] = FAIL
-#             JSON_RESPONSE[DATA] = serializer.errors
-#             return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['POST'])
+def saveMessage(request):
+    JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
+    serializer = SaveMessageSerializer(data=request.data)
+    if serializer.is_valid():
+        JSON_RESPONSE[STATUS] = SUCCESS
+        JSON_RESPONSE[MESSAGE] = "Saved" 
+        serializer.save()
+        return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
+    else:
+        JSON_RESPONSE[STATUS] = FAIL
+        JSON_RESPONSE[MESSAGE] = serializer.errors
+        return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
