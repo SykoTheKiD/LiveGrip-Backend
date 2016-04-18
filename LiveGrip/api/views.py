@@ -9,6 +9,9 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import update_last_login
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import render
+
+from GCMSender import gcmTo
 
 # Constants
 STATUS = 'status'
@@ -142,6 +145,27 @@ def saveMessage(request):
         JSON_RESPONSE[MESSAGE] = serializer.errors
         return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def sendGCM(request):
-    pass
+    TEMPLATE = 'api/sendGCM.html'
+    if request.method == 'GET':
+        return render(request, TEMPLATE)
+    else:
+        users = User.objects.filter(is_active=True).exclude(gcm_id='not_set')
+        if users.count() > 0:
+            registration_ids = users.values_list('gcm_id', flat=True)
+            data = {
+                'title': request.POST['gcm_title'],
+                'tickerText': request.POST['gcm_tickerText'],
+                'message': request.POST['gcm_message'],
+                'url' : request.POST['gcm_url'],
+                'small' : request.POST['gcm_small']
+            }
+            gcmTo(registration_ids, data)
+            return render(request, TEMPLATE, {
+                'message' : "GCM Send to " + users.count() + "people"
+            })
+        else:
+            return render(request, TEMPLATE, {
+                'message' : "No messages sent; No users with GCM IDs found"
+            })

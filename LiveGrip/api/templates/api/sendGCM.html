@@ -1,0 +1,25 @@
+<h1>GCM Sender</h1>
+
+<form action="" method="POST">
+	{% csrf_token %}
+	<label for="gcm_title">Message Title</label>
+	<input type="text" id="gcm_title" name="gcm_title"> </input>
+	<br>
+	<label for="gcm_tickerText">Bottom line notification text</label>
+	<input type="text" id="gcm_tickerText" name="gcm_tickerText"></input>
+	<br>
+	<label for="gcm_message">Message Contents</label>
+	<input type="textarea" id="gcm_message" name="gcm_message"> </input>
+	<br>
+	<label for="gcm_url">URL to an Image</label>
+	<input type="text" id="gcm_url" name="gcm_url"> </input>
+	<br>
+	<label for="gcm_checkbox">Small Notification</label>
+	<input type="radio" id="gcm_small" name="gcm_small"> </input>
+	<br>
+	<input type="submit" value="Send GCM"></input>
+</form>
+
+{% if message %}
+	<strong> {{ message }}</strong>
+{% endif %}

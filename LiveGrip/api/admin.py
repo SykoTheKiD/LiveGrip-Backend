@@ -3,8 +3,6 @@ from django.contrib.auth.admin import UserAdmin
 
 from api.models import *
 
-from gcm import GCM
-
 ## Admin Managers
 class UserAdmin(admin.ModelAdmin):
 	list_display = ('id', 'username', 'password', 'profile_image', 'gcm_id', 'app_version', 'last_login', 'is_active', 'date_joined')
@@ -29,27 +27,6 @@ class UserAdmin(admin.ModelAdmin):
 		self.message_user(request, "%s successfully activated." % message_bit)
 
 	activateAccount.short_description = "Activate Selected Users"
-
-	# def sendGCM(self, request, queryset, data):
-	# 	pass
-	# 	gcm = GCM("")
-	# 	data = {
-	# 		'title': None,
-	# 		'tickerText': None,
-	# 		'message': None,
-	# 		'url' : None
-	# 		'small' : True
-	# 	}
-	# 	registration_ids = queryset.values_list('gcm_id', flat=True)
-	# 	response = gcm.json_request(registration_ids=registration_ids, data=data)
-	# 	if rows_updated == 1:
-	# 		message_bit = "1 User was sent"
-	# 	else:
-	# 		message_bit = "%s Users were sent" % rows_updated
-	# 	self.message_user(request, "%s a Google Cloud Message." % message_bit)
-
-	# sendGCM.short_description = "Send Cloud Message To Selected Users"
-
 	actions = [activateAccount, disableAccount]
     
 class EventAdmin(admin.ModelAdmin):
