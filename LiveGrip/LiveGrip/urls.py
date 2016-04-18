@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^messages/save', api.views.saveMessage, name='saveMessage'),
     url(r'^user/update/profile_image', api.views.updateProfileImage, name='updateProfileImage'),
     url(r'^user/update/gcm_id', api.views.updateGCMID, name='updateGCMID'),
+    url(r'^sendgcm/', api.views.sendGCM, name='sendgcm'),
 ]

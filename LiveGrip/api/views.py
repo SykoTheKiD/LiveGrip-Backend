@@ -7,8 +7,8 @@ from api.serializers import *
 
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import update_last_login
+from django.core.exceptions import ObjectDoesNotExist
 
 # Constants
 STATUS = 'status'
@@ -141,3 +141,7 @@ def saveMessage(request):
         JSON_RESPONSE[STATUS] = FAIL
         JSON_RESPONSE[MESSAGE] = serializer.errors
         return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def sendGCM(request):
+    pass

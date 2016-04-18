@@ -3,11 +3,12 @@ from django.contrib.auth.admin import UserAdmin
 
 from api.models import *
 
-from copy import deepcopy
+from gcm import GCM
 
 ## Admin Managers
 class UserAdmin(admin.ModelAdmin):
 	list_display = ('id', 'username', 'password', 'profile_image', 'gcm_id', 'app_version', 'last_login', 'is_active', 'date_joined')
+	empty_value_display = '-empty-'
 
 	def disableAccount(self, request, queryset):
 		rows_updated = queryset.update(is_active=False)
@@ -29,20 +30,31 @@ class UserAdmin(admin.ModelAdmin):
 
 	activateAccount.short_description = "Activate Selected Users"
 
-	def sendGCM(self, request, queryset):
-		rows_updated = queryset.update(is_active=True)
-		if rows_updated == 1:
-			message_bit = "1 User was sent"
-		else:
-			message_bit = "%s Users were sent" % rows_updated
-		self.message_user(request, "%s a Google Cloud Message." % message_bit)
+	# def sendGCM(self, request, queryset, data):
+	# 	pass
+	# 	gcm = GCM("")
+	# 	data = {
+	# 		'title': None,
+	# 		'tickerText': None,
+	# 		'message': None,
+	# 		'url' : None
+	# 		'small' : True
+	# 	}
+	# 	registration_ids = queryset.values_list('gcm_id', flat=True)
+	# 	response = gcm.json_request(registration_ids=registration_ids, data=data)
+	# 	if rows_updated == 1:
+	# 		message_bit = "1 User was sent"
+	# 	else:
+	# 		message_bit = "%s Users were sent" % rows_updated
+	# 	self.message_user(request, "%s a Google Cloud Message." % message_bit)
 
-	sendGCM.short_description = "Send Cloud Message To Selected Users"
+	# sendGCM.short_description = "Send Cloud Message To Selected Users"
 
-	actions = [activateAccount, disableAccount, sendGCM]
+	actions = [activateAccount, disableAccount]
     
 class EventAdmin(admin.ModelAdmin):
 	list_display = [field.name for field in Event._meta.fields]
+	empty_value_display = '-empty-'
 
 	def duplicateEvent(self, request, queryset):
 		for object in queryset:
@@ -68,6 +80,7 @@ class EventAdmin(admin.ModelAdmin):
 
 class MessageAdmin(admin.ModelAdmin):
 	list_display = [field.name for field in Message._meta.fields]
+	empty_value_display = '-empty-'
 
 ## Regsiter to Admin
 admin.site.register(User, UserAdmin)
