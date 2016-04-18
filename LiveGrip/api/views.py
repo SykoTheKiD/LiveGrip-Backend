@@ -11,6 +11,7 @@ from django.contrib.auth.models import update_last_login
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 
+from forms import GCMForm
 from GCMSender import gcmTo
 
 # Constants
@@ -149,23 +150,32 @@ def saveMessage(request):
 def sendGCM(request):
     TEMPLATE = 'api/sendGCM.html'
     if request.method == 'GET':
-        return render(request, TEMPLATE)
+        form = GCMForm()
+        return render(request, TEMPLATE, {'form': form})
     else:
-        users = User.objects.filter(is_active=True).exclude(gcm_id='not_set')
-        if users.count() > 0:
-            registration_ids = users.values_list('gcm_id', flat=True)
-            data = {
-                'title': request.POST['gcm_title'],
-                'tickerText': request.POST['gcm_tickerText'],
-                'message': request.POST['gcm_message'],
-                'url' : request.POST['gcm_url'],
-                'small' : request.POST['gcm_small']
-            }
-            gcmTo(registration_ids, data)
-            return render(request, TEMPLATE, {
-                'message' : "GCM Send to " + users.count() + "people"
-            })
+        form = GCMForm(request.POST)
+        if form.is_valid():
+            users = User.objects.filter(is_active=True).exclude(gcm_id='not_set')
+            if users.count() > 0:
+                registration_ids = users.values_list('gcm_id', flat=True)
+                data = {
+                    'title': request.POST['gcm_title'],
+                    'tickerText': request.POST['gcm_tickerText'],
+                    'message': request.POST['gcm_message'],
+                    'url' : request.POST['gcm_url'],
+                    'small' : request.POST['gcm_small']
+                }
+                gcmTo(registration_ids, data)
+                return render(request, TEMPLATE, {
+                    'message' : "GCM Send to " + users.count() + "people",
+                    'form' : GCMForm()
+                })
+            else:
+                return render(request, TEMPLATE, {
+                    'message' : "No messages sent; No users with GCM IDs found",
+                    'form' : GCMForm()
+                })
         else:
             return render(request, TEMPLATE, {
-                'message' : "No messages sent; No users with GCM IDs found"
-            })
+                'form' : form
+            }) 
