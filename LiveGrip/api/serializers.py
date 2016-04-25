@@ -5,7 +5,7 @@ from models import Event, User, Message
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
-		fields = ('username', 'profile_image')
+		fields = ('id','username', 'profile_image')
 
 	def create(self, validated_data):
 		user = None
@@ -26,9 +26,11 @@ class UserSerializer(serializers.ModelSerializer):
 			
 
 class EventSerializer(serializers.ModelSerializer):
+	start_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+	end_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
 	class Meta:
 		model = Event
-		fields = ('name', 'info', 'image','location', 'start_time', 'end_time', 'match_card')
+		fields = ('id','name', 'info', 'image','location', 'start_time', 'end_time', 'match_card')
 
 
 class GetMessageSerializer(serializers.ModelSerializer):
