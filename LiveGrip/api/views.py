@@ -14,6 +14,13 @@ from django.shortcuts import render
 from forms import GCMForm
 from GCMSender import gcmTo
 
+"""
+Public API for LiveGrip
+@author: Jay Syko
+
+TODO: Implement Auth Token
+"""
+
 # Constants
 STATUS = 'status'
 DATA = 'data'
