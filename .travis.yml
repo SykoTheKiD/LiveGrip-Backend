@@ -21,7 +21,7 @@ before_script:
 script: python manage.py test
 
 after_script:
-  - cd ..
+  - cd ../build
   - ./build.sh -l digitalocean
 
 notifications:
