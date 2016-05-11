@@ -6,23 +6,27 @@ python:
   - "2.7"
 
 before_install:
-  - ./build.sh -b travis
-  - cd LiveGrip/
+  - cd LiveGrip/app
+
+env:
+  global:
+    - SECRET_KEY="oze6a9^1zt@3dc++%uux0@b3&y)lhssy5xo+ufbs+)43$hw4#o"
+    - DB_NAME=livegrip
+    - DB_USER=postgres
+    - DB_PASS=""
+    - DB_HOST=localhost
+    - DB_PORT=""
 
 services:
-  - mysql
+  - postgresql
 
 install:
   - pip install -r requirements.txt
 
 before_script:
-  - mysql -e 'create database livegrip;'
+  - psql -c 'create database livegrip;' -U postgres
 
 script: python manage.py test
-
-after_script:
-  - cd ../build
-  - ./build.sh -l digitalocean
 
 notifications:
   email: false

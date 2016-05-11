@@ -1,7 +1,7 @@
 app:
-    image: php:7.0-fpm
+    image: django:latest
     volumes:
-        - .:/var/www/html
+        - ../:/var/www/html
     command: "true"
 
 data:
@@ -16,3 +16,12 @@ mysql:
         MYSQL_DATABASE: project
         MYSQL_USER: project
         MYSQL_PASSWORD: project
+
+phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+        - 8080:80
+    links:
+        - mysql
+    environment:
+        PMA_HOST: mysql

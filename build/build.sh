@@ -1,7 +1,7 @@
 #!/bin/bash
-SETTINGS=LiveGrip/LiveGrip/settings.py
+SETTINGS=../LiveGrip/app/LiveGrip/settings.py
 
-while getopts b:l FLAG; do
+while getopts bl:d FLAG; do
   case $FLAG in
     b)  
 		sed -i "s/'PASSWORD': '1Drizzydrake'/'PASSWORD': ''/g" $SETTINGS
@@ -10,6 +10,11 @@ while getopts b:l FLAG; do
     l)  
 		sed -i "s/'PASSWORD': ''/'PASSWORD': '1Drizzydrake'/g" $SETTINGS
 		echo "Changed MySQL Config to | PRODUCTION |"
+      ;;
+    d)
+		rm -rf web/
+		mkdir web/
+		cp ../. web/ -R
       ;;
   esac
 done
