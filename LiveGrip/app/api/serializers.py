@@ -18,7 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
 				profile_image = validated_data['profile_image']
 				user.profile_image = profile_image
 			except KeyError:
-				user.profile_image = "DEFAULT"
+				user.profile_image = "http://i.imgur.com/bVlVbb2.jpg"
 			user.save()
 			return user
 		except KeyError:

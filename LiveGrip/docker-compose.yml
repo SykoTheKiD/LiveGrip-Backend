@@ -5,7 +5,6 @@ app:
     - "8000"
   links:
     - postgres:postgres
-    # - redis:redis
   volumes:
     - ./app:/usr/src/app
   env_file: .env
@@ -17,7 +16,7 @@ nginx:
   restart: always
   build: ./nginx/
   ports:
-    - "80:80"
+    - "3000:80"
   volumes:
     - /www/static
   volumes_from:
@@ -33,10 +32,22 @@ postgres:
   volumes:
     - pgdata:/var/lib/postgresql/data/
 
-# redis:
-#   restart: always
-#   image: redis:latest
-#   ports:
-#     - "6379:6379"
-#   volumes:
-#     - redisdata:/data
+mosquitto:
+  restart: always
+  build: ./mosquitto/
+  command: mosquitto -p 8001
+  ports:
+    - '8001:8001'
+  volumes_from:
+    - app
+  links:
+    - app:app
+
+rabbitmq:
+  build: ./rabbitmq/
+  hostname: rabbit1
+  ports:
+    - "5672:5672"
+    - "15672:15672"
+  links:
+    - app:app

@@ -1,0 +1,1 @@
+FROM bijukunjummen/rabbitmq-server
