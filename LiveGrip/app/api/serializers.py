@@ -32,9 +32,13 @@ class EventSerializer(serializers.ModelSerializer):
 		model = Event
 		fields = ('id','name', 'info', 'image','location', 'start_time', 'end_time', 'match_card')
 
+class UserMessageSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = User
+		fields = ('username', 'profile_image')
 
 class GetMessageSerializer(serializers.ModelSerializer):
-	user = serializers.StringRelatedField()
+	user = UserMessageSerializer()
 	event = serializers.StringRelatedField()
 	class Meta:
 		model = Message

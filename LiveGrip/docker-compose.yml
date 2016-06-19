@@ -1,6 +1,6 @@
 app:
   restart: always
-  build: ./app
+  build: ./app/
   expose:
     - "8000"
   links:
@@ -37,17 +37,8 @@ mosquitto:
   build: ./mosquitto/
   command: mosquitto -p 8001
   ports:
-    - '8001:8001'
+    - "8001:8001"
+  links:
+    - app:app
   volumes_from:
     - app
-  links:
-    - app:app
-
-rabbitmq:
-  build: ./rabbitmq/
-  hostname: rabbit1
-  ports:
-    - "5672:5672"
-    - "15672:15672"
-  links:
-    - app:app
