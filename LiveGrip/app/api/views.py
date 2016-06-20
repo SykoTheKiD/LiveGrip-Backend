@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.authtoken.models import Token as AuthToken
 from rest_framework.authtoken.serializers import AuthTokenSerializer
-from rest_framework import parsers, renderers
 
 from api.models import *
 from api.serializers import *
@@ -55,20 +54,14 @@ def login_user(request):
     """ 
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     try:
-        throttle_classes = ()
-        permission_classes = ()
-        parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
-        renderer_classes = (renderers.JSONRenderer,)
-        tokenSerializer = AuthTokenSerializer(data=request.data)
-        tokenSerializer.is_valid()
-        userToken = tokenSerializer.validated_data['user']
-        token, created = AuthToken.objects.get_or_create(user=userToken)
-
-
         user = authenticate(username=request.data['username'], password=request.data['password'])
         serializer = UserSerializer(user)
         if user is not None:
             if user.is_active:
+                tokenSerializer = AuthTokenSerializer(data=request.data)
+                tokenSerializer.is_valid()
+                userToken = tokenSerializer.validated_data['user']
+                token, created = AuthToken.objects.get_or_create(user=userToken)
                 update_last_login(None, user)
                 JSON_RESPONSE[STATUS] = SUCCESS
                 JSON_RESPONSE[DATA] = serializer.data
