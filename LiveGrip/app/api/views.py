@@ -1,6 +1,10 @@
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
+from rest_framework.authtoken.models import Token as AuthToken
+from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework import parsers, renderers
 
 from api.models import *
 from api.serializers import *
@@ -27,6 +31,7 @@ FAIL = 'fail'
 MESSAGE = 'message'
 
 @api_view(['POST'])
+@permission_classes((AllowAny,))
 def sign_up(request):
     """
     Create a new User
@@ -50,6 +55,16 @@ def login_user(request):
     """ 
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     try:
+        throttle_classes = ()
+        permission_classes = ()
+        parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
+        renderer_classes = (renderers.JSONRenderer,)
+        tokenSerializer = AuthTokenSerializer(data=request.data)
+        tokenSerializer.is_valid()
+        userToken = tokenSerializer.validated_data['user']
+        token, created = AuthToken.objects.get_or_create(user=userToken)
+
+
         user = authenticate(username=request.data['username'], password=request.data['password'])
         serializer = UserSerializer(user)
         if user is not None:
@@ -57,6 +72,7 @@ def login_user(request):
                 update_last_login(None, user)
                 JSON_RESPONSE[STATUS] = SUCCESS
                 JSON_RESPONSE[DATA] = serializer.data
+                JSON_RESPONSE[DATA]["token"] = token.key
                 return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
             else:
                 JSON_RESPONSE[STATUS] = FAIL
