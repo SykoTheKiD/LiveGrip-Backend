@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token as AuthToken
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 
@@ -18,8 +18,6 @@ from django.shortcuts import render
 """
 Public API for LiveGrip
 @author: Jay Syko
-
-TODO: Implement Auth Token
 """
 
 # Constants
@@ -28,6 +26,7 @@ DATA = 'data'
 SUCCESS = 'success'
 FAIL = 'fail'
 MESSAGE = 'message'
+TOKEN = 'token'
 
 @api_view(['POST'])
 @permission_classes((AllowAny,))
@@ -44,10 +43,11 @@ def sign_up(request):
             JSON_RESPONSE[DATA] = UserSerializer(user).data
             return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
     JSON_RESPONSE[STATUS] = FAIL
-    JSON_RESPONSE[MESSAGE] = serializer.errors
+    JSON_RESPONSE[MESSAGE] = "Username has been taken"
     return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
+@permission_classes((AllowAny,))
 def login_user(request):
     """
     Login a new User
@@ -65,7 +65,7 @@ def login_user(request):
                 update_last_login(None, user)
                 JSON_RESPONSE[STATUS] = SUCCESS
                 JSON_RESPONSE[DATA] = serializer.data
-                JSON_RESPONSE[DATA]["token"] = token.key
+                JSON_RESPONSE[DATA][TOKEN] = token.key
                 return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
             else:
                 JSON_RESPONSE[STATUS] = FAIL
@@ -79,6 +79,7 @@ def login_user(request):
         return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
+@permission_classes((IsAuthenticated,))
 def updateProfileImage(request):
     """
     Update the user's profile image
@@ -101,11 +102,16 @@ def updateProfileImage(request):
         return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
+@permission_classes((IsAuthenticated,))
 def events(request):
     """
     List all the Events
     """
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
+    if(request.auth == None):
+        JSON_RESPONSE[STATUS] = FAIL
+        JSON_RESPONSE[MESSAGE] = "Authentication credentials were not provided."
+        return Response(JSON_RESPONSE, status=status.HTTP_401_UNAUTHORIZED)
     if request.method == 'GET':
         JSON_RESPONSE[STATUS] = SUCCESS
         events = Event.objects.filter(status = 'p')
@@ -114,6 +120,7 @@ def events(request):
         return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
+@permission_classes((IsAuthenticated,))
 def messages(request, event_id):
     """
     List all messages given a certain event
@@ -126,6 +133,7 @@ def messages(request, event_id):
     return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
+@permission_classes((IsAuthenticated,))
 def saveMessage(request):
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     serializer = SaveMessageSerializer(data=request.data)
