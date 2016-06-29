@@ -39,8 +39,13 @@ def sign_up(request):
     if serializer.is_valid():
         user = serializer.create(request.data)
         if(user != None):
+            tokenSerializer = AuthTokenSerializer(data=request.data)
+            tokenSerializer.is_valid()
+            userToken = tokenSerializer.validated_data['user']
+            token, created = AuthToken.objects.get_or_create(user=userToken)
             JSON_RESPONSE[STATUS] = SUCCESS
             JSON_RESPONSE[DATA] = UserSerializer(user).data
+            JSON_RESPONSE[DATA][TOKEN] = token.key
             return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
     JSON_RESPONSE[STATUS] = FAIL
     JSON_RESPONSE[MESSAGE] = "Username has been taken"

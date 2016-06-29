@@ -5,6 +5,7 @@ app:
     - "8000"
   links:
     - postgres:postgres
+    - redis:redis
   volumes:
     - ./app:/usr/src/app
   env_file: .env
@@ -26,7 +27,7 @@ nginx:
 
 postgres:
   restart: always
-  image: postgres:latest
+  build: ./postgres/
   ports:
     - "5432:5432"
   volumes:
@@ -42,3 +43,11 @@ mosquitto:
     - app:app
   volumes_from:
     - app
+
+redis:
+  restart: always
+  build: ./redis/
+  ports:
+    - "6379:6379"
+  volumes:
+    - redisdata:/data

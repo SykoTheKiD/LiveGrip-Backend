@@ -39,10 +39,9 @@ class UserMessageSerializer(serializers.ModelSerializer):
 
 class GetMessageSerializer(serializers.ModelSerializer):
 	user = UserMessageSerializer()
-	event = serializers.StringRelatedField()
 	class Meta:
 		model = Message
-		fields = ('user', 'event', 'body')
+		fields = ('user', 'body')
 
 class SaveMessageSerializer(serializers.ModelSerializer):
 	class Meta:
