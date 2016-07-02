@@ -9,8 +9,6 @@ app:
   volumes:
     - ./app:/usr/src/app
   env_file: .env
-  environment:
-    DEBUG: 'true'
   command: /usr/local/bin/gunicorn LiveGrip.wsgi:application -w 2 -b :8000
 
 nginx:
@@ -28,26 +26,22 @@ nginx:
 postgres:
   restart: always
   build: ./postgres/
-  ports:
-    - "5432:5432"
+  expose:
+    - "5432"
   volumes:
     - pgdata:/var/lib/postgresql/data/
 
 mosquitto:
   restart: always
   build: ./mosquitto/
-  command: mosquitto -p 8001
+  command: mosquitto -p 8080
   ports:
-    - "8001:8001"
-  links:
-    - app:app
-  volumes_from:
-    - app
+    - "8080:8080"
 
 redis:
   restart: always
   build: ./redis/
-  ports:
-    - "6379:6379"
+  expose:
+    - "6379"
   volumes:
     - redisdata:/data

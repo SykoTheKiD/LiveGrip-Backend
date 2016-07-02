@@ -14,6 +14,9 @@ from django.contrib.auth.models import update_last_login
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 
+from queue import RedisConnection
+
+import json
 
 """
 Public API for LiveGrip
@@ -27,6 +30,8 @@ SUCCESS = 'success'
 FAIL = 'fail'
 MESSAGE = 'message'
 TOKEN = 'token'
+
+REDIS_CLIENT = RedisConnection().getClient()
 
 @api_view(['POST'])
 @permission_classes((AllowAny,))
@@ -113,41 +118,38 @@ def events(request):
     List all the Events
     """
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
-    if(request.auth == None):
-        JSON_RESPONSE[STATUS] = FAIL
-        JSON_RESPONSE[MESSAGE] = "Authentication credentials were not provided."
-        return Response(JSON_RESPONSE, status=status.HTTP_401_UNAUTHORIZED)
-    if request.method == 'GET':
-        JSON_RESPONSE[STATUS] = SUCCESS
-        events = Event.objects.filter(status = 'p')
-        serializer = EventSerializer(events, many=True)
-        JSON_RESPONSE[DATA] = serializer.data
-        return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
+    JSON_RESPONSE[STATUS] = SUCCESS
+    events = Event.objects.filter(status = 'p')
+    serializer = EventSerializer(events, many=True)
+    JSON_RESPONSE[DATA] = serializer.data
+    return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((AllowAny,))
 def messages(request, event_id):
     """
     List all messages given a certain event
     """
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
-    messages = Message.objects.filter(event=event_id)[:50]
-    serializer = GetMessageSerializer(messages, many=True)
+    listId = str(event_id)
     JSON_RESPONSE[STATUS] = SUCCESS
-    JSON_RESPONSE[DATA] = serializer.data
+    JSON_RESPONSE[DATA] = REDIS_CLIENT.lrange(listId, 0, -1)
     return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((AllowAny,))
 def saveMessage(request):
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
-    serializer = SaveMessageSerializer(data=request.data)
+    serializer = MessageSerializer(request)
     if serializer.is_valid():
+        REDIS_CLIENT.rpush(
+            serializer.getKey(),
+            serializer.getValue()
+        )
         JSON_RESPONSE[STATUS] = SUCCESS
-        JSON_RESPONSE[MESSAGE] = "Saved" 
-        serializer.save()
+        JSON_RESPONSE[MESSAGE] = "Saved"
         return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
     else:
         JSON_RESPONSE[STATUS] = FAIL
-        JSON_RESPONSE[MESSAGE] = serializer.errors
-        return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
+        JSON_RESPONSE[MESSAGE] = serializer.error
+    return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)

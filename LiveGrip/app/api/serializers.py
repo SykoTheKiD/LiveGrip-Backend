@@ -24,7 +24,6 @@ class UserSerializer(serializers.ModelSerializer):
 		except KeyError:
 			return user
 			
-
 class EventSerializer(serializers.ModelSerializer):
 	start_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
 	end_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
@@ -32,18 +31,29 @@ class EventSerializer(serializers.ModelSerializer):
 		model = Event
 		fields = ('id','name', 'info', 'image','location', 'start_time', 'end_time', 'match_card')
 
-class UserMessageSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = User
-		fields = ('username', 'profile_image')
+class MessageSerializer():
+	def __init__(self, request):
+		self.request = request
+		self.key = None
+		self.value = {}
+		self.error = None
 
-class GetMessageSerializer(serializers.ModelSerializer):
-	user = UserMessageSerializer()
-	class Meta:
-		model = Message
-		fields = ('user', 'body')
+	def is_valid(self):
+		try:
+			self.value['user_id'] = self.request.data['user_id']
+			self.value['event_id'] = self.request.data['event_id']
+			self.value['username'] = self.request.data['username']
+			self.value['profile_image'] = self.request.data['profile_image']
+			self.value['body'] = self.request.data['body']
+			self.key = self.request.data['event_id']
+			return True
+		except KeyError:
+			self.error = "Missing Fields"
+			return False
 
-class SaveMessageSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Message
-		fields = ('user', 'event', 'body')
+	def getKey(self):
+		return str(self.key)
+
+	def getValue(self):
+		return self.value
+
