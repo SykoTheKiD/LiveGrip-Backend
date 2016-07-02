@@ -12,7 +12,6 @@ class User(AbstractUser):
 		ordering = ['id']
 
 	profile_image = models.CharField(max_length=300, null=True, default="unset")
-	gcm_id = models.CharField(max_length=500, default="not_set", null=True)
 	app_version = models.CharField(max_length=10, default="undefined", null=True)
 
 	def __unicode__(self):

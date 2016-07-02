@@ -2,6 +2,8 @@ from rest_framework import serializers
 
 from models import Event, User, Message
 
+import json
+
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
@@ -55,5 +57,5 @@ class MessageSerializer():
 		return str(self.key)
 
 	def getValue(self):
-		return self.value
+		return json.dumps(self.value)
 
