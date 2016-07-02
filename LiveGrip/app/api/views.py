@@ -125,7 +125,7 @@ def events(request):
     return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@permission_classes((AllowAny,))
+@permission_classes((IsAuthenticated,))
 def messages(request, event_id):
     """
     List all messages given a certain event
@@ -137,7 +137,7 @@ def messages(request, event_id):
     return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
-@permission_classes((AllowAny,))
+@permission_classes((IsAuthenticated,))
 def saveMessage(request):
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     serializer = MessageSerializer(request)
