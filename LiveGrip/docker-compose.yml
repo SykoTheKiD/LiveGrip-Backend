@@ -8,8 +8,6 @@ app:
     - redis:redis
   volumes:
     - ./app:/usr/src/app
-  env_file: .env
-  command: /usr/local/bin/gunicorn LiveGrip.wsgi:application -w 2 -b :8000
 
 nginx:
   restart: always
@@ -34,7 +32,6 @@ postgres:
 mosquitto:
   restart: always
   build: ./mosquitto/
-  command: mosquitto -p 8080
   ports:
     - "8080:8080"
 
@@ -45,3 +42,12 @@ redis:
     - "6379"
   volumes:
     - redisdata:/data
+
+celery:
+  restart: always
+  build: ./celery/
+  links:
+    - postgres:postgres
+    - redis:redis
+  volumes_from:
+    - app

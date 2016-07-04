@@ -7,6 +7,9 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 
 from api.models import *
 from api.serializers import *
+from api.queue import RedisConnection
+
+from api.tasks import hello_world
 
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
@@ -14,9 +17,8 @@ from django.contrib.auth.models import update_last_login
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 
-from queue import RedisConnection
+import thread
 
-import json
 
 """
 Public API for LiveGrip
@@ -146,6 +148,7 @@ def saveMessage(request):
             serializer.getKey(),
             serializer.getValue()
         )
+        hello_world()
         JSON_RESPONSE[STATUS] = SUCCESS
         JSON_RESPONSE[MESSAGE] = "Saved"
         return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
@@ -153,3 +156,51 @@ def saveMessage(request):
         JSON_RESPONSE[STATUS] = FAIL
         JSON_RESPONSE[MESSAGE] = serializer.error
     return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

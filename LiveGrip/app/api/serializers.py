@@ -59,3 +59,8 @@ class MessageSerializer():
 	def getValue(self):
 		return json.dumps(self.value)
 
+
+class DatabaseMessageSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Message
+		fields = ('user', 'event', 'body')
