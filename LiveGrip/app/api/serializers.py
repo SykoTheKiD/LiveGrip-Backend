@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from models import Event, User, Message
+from api.models import Event, User, Message
 
 import json
 

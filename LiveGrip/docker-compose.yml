@@ -5,7 +5,7 @@ app:
     - "8000"
   links:
     - postgres:postgres
-    - redis:redis
+    - rethinkdb:rethinkdb
   volumes:
     - ./app:/usr/src/app
 
@@ -33,21 +33,12 @@ mosquitto:
   restart: always
   build: ./mosquitto/
   ports:
+    - "8081:8081"
+
+rethinkdb:
+  restart: always
+  build: ./rethinkdb/
+  ports:
+    - "28015:28015"
+    - "29015:29015"
     - "8080:8080"
-
-redis:
-  restart: always
-  build: ./redis/
-  expose:
-    - "6379"
-  volumes:
-    - redisdata:/data
-
-celery:
-  restart: always
-  build: ./celery/
-  links:
-    - postgres:postgres
-    - redis:redis
-  volumes_from:
-    - app
