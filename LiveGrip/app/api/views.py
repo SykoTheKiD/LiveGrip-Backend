@@ -7,13 +7,16 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 
 from api.models import *
 from api.serializers import *
-from api.queue import RedisConnection
 
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import update_last_login
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
+
+import time
+
+import rethinkdb as r
 
 """
 Public API for LiveGrip
@@ -28,7 +31,7 @@ FAIL = 'fail'
 MESSAGE = 'message'
 TOKEN = 'token'
 
-REDIS_CLIENT = RedisConnection().getClient()
+CONN = r.connect(host="rethinkdb", db='livegrip_messages')
 
 @api_view(['POST'])
 @permission_classes((AllowAny,))
@@ -120,3 +123,31 @@ def events(request):
     serializer = EventSerializer(events, many=True)
     JSON_RESPONSE[DATA] = serializer.data
     return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,))
+def messages(request, event_id):
+    """
+    List all messages given a certain event
+    """
+    JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
+    table_name = "event_" + str(event_id)
+    JSON_RESPONSE[STATUS] = SUCCESS
+    JSON_RESPONSE[DATA] = r.table(table_name).order_by(r.desc('message_id')).limit(10).run(CONN)
+    return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,))
+def saveMessage(request):
+    JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
+    table_name = "event_" + str(request.data['event_id'])
+    r.table(table_name).insert({ 
+        'username': request.data['username'], 
+        'profile_image': request.data['profile_image'], 
+        'event_id': request.data['event_id'], 
+        'user_id': request.data['user_id'],
+        'body': request.data['body'],
+        'message_id': int(round(time.time() * 1000))}).run(CONN)
+    JSON_RESPONSE[STATUS] = SUCCESS
+    JSON_RESPONSE[MESSAGE] = "Saved"
+    return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)

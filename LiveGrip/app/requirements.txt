@@ -2,6 +2,4 @@ django
 djangorestframework
 gunicorn
 psycopg2
-redis
-celery
-celery[redis]
+rethinkdb
