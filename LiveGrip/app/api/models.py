@@ -30,7 +30,7 @@ class Event(models.Model):
 	
 	name = models.CharField(max_length=30, null=False)
 	info = models.TextField(default=None)
-	image = models.CharField(max_length=70, null=False)
+	image = models.CharField(max_length=200, null=False)
 	location = models.CharField(max_length=30, null=False)
 	start_time = models.DateTimeField()
 	end_time = models.DateTimeField()

@@ -24,6 +24,7 @@ Public API for LiveGrip
 """
 
 # Constants
+APP_VERSION = 1
 STATUS = 'status'
 DATA = 'data'
 SUCCESS = 'success'
@@ -113,12 +114,14 @@ def updateProfileImage(request):
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,))
-def events(request):
+def events(request, app_version):
     """
     List all the Events
     """
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     JSON_RESPONSE[STATUS] = SUCCESS
+    if (int(app_version) < APP_VERSION):
+            JSON_RESPONSE[MESSAGE] = "A New Version of the App is Available"
     events = Event.objects.filter(status = 'p')
     serializer = EventSerializer(events, many=True)
     JSON_RESPONSE[DATA] = serializer.data
