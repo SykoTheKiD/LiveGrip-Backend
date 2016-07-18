@@ -97,10 +97,10 @@ def updateProfileImage(request):
     """
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     try:
-        username=request.data['username']
+        user_id = request.data['user_id']
         profile_image = request.data['profile_image']
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(id=user_id)
             user.profile_image = profile_image
             user.save()
             JSON_RESPONSE[STATUS] = SUCCESS

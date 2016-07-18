@@ -6,7 +6,6 @@ from api.models import User, Event
 ## Constants
 USERNAME = 'username'
 PASSWORD = 'password'
-GCM_ID = 'gcm_id'
 PROFILE_IMAGE = 'profile_image'
 
 ## VALID DUMMY DATA
@@ -18,7 +17,12 @@ REGISTER = 'register'
 LOGIN = 'login'
 EVENTS = 'events'
 UPDATE_PROFILE_IMAGE = 'updateProfileImage'
-UPDATE_GCM_ID = 'updateGCMID'
+HTTP_AUTHORIZATION = 'HTTP_AUTHORIZATION'
+
+RESPONSE_DATA = 'data'
+RESPONSE_TOKEN = 'token'
+AUTH_PREFIX = 'Token '
+RESPONSE_DATA_ID = 'id'
 
 ## Util Functions
 def makePostRequest(url, authInfo, client):
@@ -30,7 +34,7 @@ def makeGetRequest(url, authInfo, client):
     return client.get(url, format='json')
 
 
-class UserTests(APITestCase):
+class NonAuthorizedTests(APITestCase):
     """
     Register user tests
     """
@@ -57,7 +61,7 @@ class UserTests(APITestCase):
         """
         Ensure we can create a new account object.
         """
-        data = {USERNAME: 'data'}
+        data = {USERNAME: 'kanye'}
         response = makePostRequest(REGISTER, data, self.client)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -90,7 +94,6 @@ class UserTests(APITestCase):
         user = User.objects.get()
         user.is_active = False
         user.save()
-
         response = makePostRequest(LOGIN, VALID_LOGIN_DATA, REQUEST_CLIENT)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -107,59 +110,41 @@ class UserTests(APITestCase):
         response = makePostRequest(LOGIN, VALID_LOGIN_DATA, REQUEST_CLIENT)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+class AuthorizedTests(APITestCase):
+
     def test_update_image_bad_request(self):
         """
-        Ensure we can create a new account object.
+        Ensure we can reject a bad image update request properly.
         """
         REQUEST_CLIENT = self.client
-        makePostRequest(REGISTER, VALID_REGISTER_DATA, REQUEST_CLIENT)
-
-        response = makePostRequest(UPDATE_PROFILE_IMAGE, {USERNAME: VALID_LOGIN_DATA[USERNAME]}, REQUEST_CLIENT)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = makePostRequest(REGISTER, VALID_REGISTER_DATA, REQUEST_CLIENT)
+        authToken = response.data[RESPONSE_DATA][RESPONSE_TOKEN]
+        
+        REQUEST_CLIENT.defaults[HTTP_AUTHORIZATION] = AUTH_PREFIX + authToken
+        test_response = makePostRequest(UPDATE_PROFILE_IMAGE, {'user_id': 1}, REQUEST_CLIENT)
+        self.assertEqual(test_response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_image_good(self):
         """
-        Ensure we can create a new account object.
+        Ensure we can update a user's profile image.
         """
         REQUEST_CLIENT = self.client
-        makePostRequest(REGISTER, VALID_REGISTER_DATA, REQUEST_CLIENT)
+        response = makePostRequest(REGISTER, VALID_REGISTER_DATA, REQUEST_CLIENT)
+        authToken = response.data[RESPONSE_DATA][RESPONSE_TOKEN]
+        REQUEST_CLIENT.defaults[HTTP_AUTHORIZATION] = AUTH_PREFIX + authToken
 
-        response = makePostRequest(UPDATE_PROFILE_IMAGE, {USERNAME: VALID_LOGIN_DATA[USERNAME], PROFILE_IMAGE:'image.jpg'}, REQUEST_CLIENT)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        test_response = makePostRequest(UPDATE_PROFILE_IMAGE, {'user_id': response.data[RESPONSE_DATA][RESPONSE_DATA_ID], PROFILE_IMAGE:'image.jpg'}, REQUEST_CLIENT)
+        self.assertEqual(test_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(User.objects.get().profile_image, 'image.jpg')
 
     def test_update_image_not_found(self):
         """
         Ensure we can create a new account object.
         """
-        response = makePostRequest(UPDATE_PROFILE_IMAGE, {USERNAME: VALID_LOGIN_DATA[USERNAME], PROFILE_IMAGE:'image.jpg'}, self.client)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_update_gcm_id_not_found(self):
-        """
-        Ensure we can create a new account object.
-        """
-        response = makePostRequest(UPDATE_GCM_ID, {USERNAME: VALID_LOGIN_DATA[USERNAME], GCM_ID: '309053213'}, self.client)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_update_gcm_id_bad_request(self):
-        """
-        Ensure we can create a new account object.
-        """
         REQUEST_CLIENT = self.client
-        makePostRequest(REGISTER, VALID_REGISTER_DATA, REQUEST_CLIENT)
+        response = makePostRequest(REGISTER, VALID_REGISTER_DATA, REQUEST_CLIENT)
+        authToken = response.data[RESPONSE_DATA][RESPONSE_TOKEN]
+        REQUEST_CLIENT.defaults[HTTP_AUTHORIZATION] = AUTH_PREFIX + authToken
 
-        response = makePostRequest(UPDATE_GCM_ID, {PASSWORD: 'password'}, self.client)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_update_gcm_id_good(self):
-        """
-        Ensure we can create a new account object.
-        """
-        REQUEST_CLIENT = self.client
-        makePostRequest(REGISTER, VALID_REGISTER_DATA, REQUEST_CLIENT)
-
-        response = makePostRequest(UPDATE_GCM_ID, {USERNAME: VALID_LOGIN_DATA[USERNAME], GCM_ID: '309053213'}, REQUEST_CLIENT)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-
-
+        test_response = makePostRequest(UPDATE_PROFILE_IMAGE, {'user_id': 5, PROFILE_IMAGE:'image.jpg'}, REQUEST_CLIENT)
+        self.assertEqual(test_response.status_code, status.HTTP_404_NOT_FOUND)

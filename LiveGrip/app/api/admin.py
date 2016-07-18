@@ -5,7 +5,7 @@ from api.models import *
 
 ## Admin Managers
 class UserAdmin(admin.ModelAdmin):
-	list_display = ('id', 'username', 'password', 'profile_image', 'app_version', 'last_login', 'is_active', 'date_joined')
+	list_display = ('id', 'username', 'password', 'profile_image', 'last_login', 'is_active', 'date_joined')
 	empty_value_display = '-empty-'
 
 	def disableAccount(self, request, queryset):
