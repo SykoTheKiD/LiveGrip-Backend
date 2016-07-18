@@ -3,7 +3,7 @@ language: python
 sudo: required
 
 python:
-  - "2.7"
+  - "3.5"
 
 before_install:
   - cd LiveGrip/app
@@ -14,8 +14,10 @@ env:
     - DB_NAME=livegrip
     - DB_USER=postgres
     - DB_PASS=""
-    - DB_HOST=localhost
+    - DB_SERVICE=localhost
     - DB_PORT=""
+    - DEBUG=true
+    - CI=true
 
 services:
   - postgresql

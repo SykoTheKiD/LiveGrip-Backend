@@ -16,6 +16,8 @@ from django.shortcuts import render
 
 import time
 
+import os
+
 import rethinkdb as r
 
 """
@@ -32,7 +34,7 @@ FAIL = 'fail'
 MESSAGE = 'message'
 TOKEN = 'token'
 
-CONN = r.connect(host="rethinkdb", db='livegrip_messages')
+CONN = r.connect(host="rethinkdb", db='livegrip_messages') if os.getenv('CI') == 'false' else None
 
 @api_view(['POST'])
 @permission_classes((AllowAny,))
