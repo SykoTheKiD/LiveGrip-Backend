@@ -17,6 +17,16 @@ class User(AbstractUser):
 	def __unicode__(self):
 		return self.username
 
+	def authenticate(self, username=None, password=None):
+		try:
+			user = User.objects.get(username__iexact=username)
+			if user.check_password(password):
+				return user
+			else:
+				return None
+		except User.DoesNotExist:
+			return None
+
 STATUS_CHOICES = (
     ('h', 'Holding'),
     ('p', 'Published')

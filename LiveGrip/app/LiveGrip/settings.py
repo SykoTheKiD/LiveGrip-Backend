@@ -117,6 +117,7 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'api.exceptions.custom_exception_handler',
 }
 
+AUTHENTICATION_BACKENDS = ('api.backends.CaseInsensitiveModelBackend',)
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
