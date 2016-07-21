@@ -9,3 +9,5 @@ ENV DB_PASS=postgres
 ENV DB_SERVICE=postgres
 ENV DB_PORT=5432
 ENV CI=false
+
+RUN python manage.py migrate
