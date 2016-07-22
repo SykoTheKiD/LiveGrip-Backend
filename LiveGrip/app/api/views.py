@@ -2,20 +2,21 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.authtoken.models import Token as AuthToken
-from rest_framework.authtoken.serializers import AuthTokenSerializer
 
 from api.models import *
 from api.serializers import *
+from api.permissions import *
+from api.authenticators import ExpiringTokenAuthentication
 
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import update_last_login
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
+from django.utils import timezone
 
+import datetime
 import time
-
 import os
 
 import rethinkdb as r
@@ -47,10 +48,7 @@ def sign_up(request):
     if serializer.is_valid():
         user = serializer.create(request.data)
         if(user != None):
-            tokenSerializer = AuthTokenSerializer(data=request.data)
-            tokenSerializer.is_valid()
-            userToken = tokenSerializer.validated_data['user']
-            token, created = AuthToken.objects.get_or_create(user=userToken)
+            token = AccessToken.objects.get(user=user)
             JSON_RESPONSE[STATUS] = SUCCESS
             JSON_RESPONSE[DATA] = UserSerializer(user).data
             JSON_RESPONSE[DATA][TOKEN] = token.key
@@ -71,14 +69,14 @@ def login_user(request):
         serializer = UserSerializer(user)
         if user is not None:
             if user.is_active:
-                tokenSerializer = AuthTokenSerializer(data=request.data)
-                tokenSerializer.is_valid()
-                userToken = tokenSerializer.validated_data['user']
-                token, created = AuthToken.objects.get_or_create(user=userToken)
+                db_token = AccessToken.objects.get(user=user.id)
+                db_token.key = AccessToken().generate_key()
+                db_token.expiry_date = timezone.now() + datetime.timedelta(days=30)
+                db_token.save()
                 update_last_login(None, user)
                 JSON_RESPONSE[STATUS] = SUCCESS
                 JSON_RESPONSE[DATA] = serializer.data
-                JSON_RESPONSE[DATA][TOKEN] = token.key
+                JSON_RESPONSE[DATA][TOKEN] = db_token.key
                 return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
             else:
                 JSON_RESPONSE[STATUS] = FAIL
@@ -92,12 +90,12 @@ def login_user(request):
         return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated,IsValidToken,IsActive,))
 def updateProfileImage(request):
     """
     Update the user's profile image
     """
-    JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
+    JSON_RESPONSE = {STATUS: request.META['HTTP_AUTHORIZATION'], DATA: None, MESSAGE: None}
     try:
         user_id = request.data['user_id']
         profile_image = request.data['profile_image']
@@ -115,7 +113,7 @@ def updateProfileImage(request):
         return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated,IsValidToken,IsActive,))
 def events(request, app_version):
     """
     List all the Events
@@ -130,7 +128,7 @@ def events(request, app_version):
     return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated,IsValidToken,IsActive,))
 def messages(request, event_id):
     """
     List all messages given a certain event
@@ -142,7 +140,7 @@ def messages(request, event_id):
     return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated,IsValidToken,IsActive,))
 def saveMessage(request):
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     table_name = "event_" + str(request.data['event_id'])

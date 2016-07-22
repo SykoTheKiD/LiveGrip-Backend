@@ -112,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+        'api.authenticators.ExpiringTokenAuthentication',
     ),
     'EXCEPTION_HANDLER': 'api.exceptions.custom_exception_handler',
 }

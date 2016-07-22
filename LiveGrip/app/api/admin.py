@@ -59,7 +59,13 @@ class MessageAdmin(admin.ModelAdmin):
 	list_display = [field.name for field in Message._meta.fields]
 	empty_value_display = '-empty-'
 
+class AuthTokenAdmin(admin.ModelAdmin):
+	list_display = [field.name for field in AccessToken._meta.fields]
+	empty_value_display = '-empty-'
+
+
 ## Regsiter to Admin
 admin.site.register(User, UserAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(Message, MessageAdmin)
+admin.site.register(AccessToken, AuthTokenAdmin)

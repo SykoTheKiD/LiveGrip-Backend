@@ -4,8 +4,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from rest_framework.authtoken.models import Token
 from django.conf import settings
+
+import binascii
+import os
 
 class User(AbstractUser):
 	class Meta:
@@ -60,10 +62,33 @@ class Message(models.Model):
 	body = models.TextField(verbose_name='message')
 	created = models.DateTimeField(auto_now_add=True)
 
+class AccessToken(models.Model):
+
+	class Meta:
+		db_table = 'access_tokens'
+		verbose_name = "Access Token"
+		verbose_name_plural = "Access Tokens"
+
+	key = models.CharField(max_length=40, verbose_name="Token")
+	user = models.OneToOneField(User, related_name='token', on_delete=models.CASCADE, verbose_name="User")
+	expiry_date = models.DateTimeField(auto_now_add=True)
+	created = models.DateTimeField("Created", auto_now_add=True)
+
+	def generate_key(self):
+		return binascii.hexlify(os.urandom(20)).decode()
+
+	def save(self, *args, **kwargs):
+		if not self.key:
+			self.key = self.generate_key()
+		return super(AccessToken, self).save(*args, **kwargs)
+
+	def __str__(self):
+		return self.key
+
 
 # This code is triggered whenever a new user has been created and saved to the database
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
-        Token.objects.create(user=instance)
+        AccessToken.objects.create(user=instance)
