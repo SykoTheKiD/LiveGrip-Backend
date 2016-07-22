@@ -95,7 +95,7 @@ def updateProfileImage(request):
     """
     Update the user's profile image
     """
-    JSON_RESPONSE = {STATUS: request.META['HTTP_AUTHORIZATION'], DATA: None, MESSAGE: None}
+    JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     try:
         user_id = request.data['user_id']
         profile_image = request.data['profile_image']

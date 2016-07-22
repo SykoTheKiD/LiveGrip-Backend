@@ -9,19 +9,16 @@ class IsValidToken(permissions.BasePermission):
 	message = "Invalid Token"
 
 	def has_permission(self, request, view):
-		request_token = request.META['HTTP_AUTHORIZATION'].split()[1]
+		request_token = request.auth.key
 		user = None
 		try:
 			user = request.data['user_id']
-		except KeyError:
-			return False
-		try:
 			db_token = AccessToken.objects.get(key=request_token, user=user)
-			if(db_token.created < timezone.now()):
+			if(db_token.expiry_date < timezone.now()):
 				return False
 			else:
 				return True
-		except AccessToken.DoesNotExist:
+		except Exception:
 			return False
 
 class IsActive(permissions.BasePermission):
@@ -29,11 +26,8 @@ class IsActive(permissions.BasePermission):
 
 		def has_permission(self, request, view):
 			try:
-				user = request.data['user_id']
-			except KeyError:
-				return False
-			try:
-				db_user = User.objects.get(id=user)
-				return db_user.is_active
-			except User.DoesNotExist:
+				# user = request.data['user_id']
+				# db_user = User.objects.get(id=user)
+				return request.user.is_active
+			except Exception:
 				return False
