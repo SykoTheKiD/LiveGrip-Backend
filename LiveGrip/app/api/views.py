@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from api.models import *
 from api.serializers import *
 from api.permissions import *
+from api.utils import new_token_expiry_date
 from api.authenticators import ExpiringTokenAuthentication
 
 from django.http import HttpResponse
@@ -13,7 +14,6 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import update_last_login
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
-from django.utils import timezone
 
 import datetime
 import time
@@ -71,7 +71,7 @@ def login_user(request):
             if user.is_active:
                 db_token = AccessToken.objects.get(user=user.id)
                 db_token.key = AccessToken().generate_key()
-                db_token.expiry_date = timezone.now() + datetime.timedelta(days=30)
+                db_token.expiry_date = new_token_expiry_date()
                 db_token.save()
                 update_last_login(None, user)
                 JSON_RESPONSE[STATUS] = SUCCESS

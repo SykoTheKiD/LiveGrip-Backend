@@ -6,6 +6,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
 
+from api.utils import new_token_expiry_date
+
 import binascii
 import os
 
@@ -71,7 +73,7 @@ class AccessToken(models.Model):
 
 	key = models.CharField(max_length=40, verbose_name="Token")
 	user = models.OneToOneField(User, related_name='token', on_delete=models.CASCADE, verbose_name="User")
-	expiry_date = models.DateTimeField(auto_now_add=True)
+	expiry_date = models.DateTimeField(default=new_token_expiry_date())
 	created = models.DateTimeField("Created", auto_now_add=True)
 
 	def generate_key(self):
@@ -87,7 +89,6 @@ class AccessToken(models.Model):
 
 
 # This code is triggered whenever a new user has been created and saved to the database
-
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
