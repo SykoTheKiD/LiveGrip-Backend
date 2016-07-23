@@ -15,7 +15,6 @@ from django.contrib.auth.models import update_last_login
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 
-import datetime
 import time
 import os
 

@@ -9,11 +9,9 @@ class IsValidToken(permissions.BasePermission):
 	message = "Invalid Token"
 
 	def has_permission(self, request, view):
-		request_token = request.auth.key
-		user = None
 		try:
 			user = request.data['user_id']
-			db_token = AccessToken.objects.get(key=request_token, user=user)
+			db_token = AccessToken.objects.get(key=request.auth, user=user)
 			if(db_token.expiry_date < timezone.now()):
 				return False
 			else:
@@ -25,9 +23,4 @@ class IsActive(permissions.BasePermission):
 		message = "Account Blocked"
 
 		def has_permission(self, request, view):
-			try:
-				# user = request.data['user_id']
-				# db_user = User.objects.get(id=user)
-				return request.user.is_active
-			except Exception:
-				return False
+			return request.user.is_active
