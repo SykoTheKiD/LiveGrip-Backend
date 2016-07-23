@@ -15,7 +15,7 @@ VALID_REGISTER_DATA = {USERNAME: 'JaySyko', PASSWORD: 'passpass', PROFILE_IMAGE:
 ## URLS
 REGISTER = 'register'
 LOGIN = 'login'
-EVENTS = 'events'
+EVENTS = 'events&app_version=2'
 UPDATE_PROFILE_IMAGE = 'updateProfileImage'
 HTTP_AUTHORIZATION = 'HTTP_AUTHORIZATION'
 
@@ -29,8 +29,8 @@ def makePostRequest(url, authInfo, client):
     url = reverse(url)
     return client.post(url, authInfo, format='json')
 
-def makeGetRequest(url, authInfo, client):
-    url = reverse(url)
+def makeGetRequest(endpoint, client):
+    url = "http://localhost:3000/" + endpoint
     return client.get(url, format='json')
 
 
@@ -122,7 +122,7 @@ class AuthorizedTests(APITestCase):
         
         REQUEST_CLIENT.defaults[HTTP_AUTHORIZATION] = AUTH_PREFIX + authToken
         test_response = makePostRequest(UPDATE_PROFILE_IMAGE, {'user_id': 1}, REQUEST_CLIENT)
-        self.assertEqual(test_response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(test_response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_update_image_good(self):
         """
@@ -147,4 +147,13 @@ class AuthorizedTests(APITestCase):
         REQUEST_CLIENT.defaults[HTTP_AUTHORIZATION] = AUTH_PREFIX + authToken
 
         test_response = makePostRequest(UPDATE_PROFILE_IMAGE, {'user_id': 5, PROFILE_IMAGE:'image.jpg'}, REQUEST_CLIENT)
-        self.assertEqual(test_response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(test_response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_events(self):
+        REQUEST_CLIENT = self.client
+        response = makePostRequest(REGISTER, VALID_REGISTER_DATA, REQUEST_CLIENT)
+        authToken = response.data[RESPONSE_DATA][RESPONSE_TOKEN]
+        REQUEST_CLIENT.defaults[HTTP_AUTHORIZATION] = AUTH_PREFIX + authToken
+
+        test_response = makeGetRequest(EVENTS, REQUEST_CLIENT)
+        self.assertEqual(test_response.status_code, status.HTTP_200_OK)

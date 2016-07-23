@@ -112,7 +112,7 @@ def updateProfileImage(request):
         return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,IsValidToken,IsActive,))
+@permission_classes((IsAuthenticated,IsActive,))
 def events(request, app_version):
     """
     List all the Events
