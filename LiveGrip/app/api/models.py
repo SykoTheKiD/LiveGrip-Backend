@@ -8,16 +8,17 @@ from django.conf import settings
 
 from api.utils import new_token_expiry_date
 
-import binascii
 import os
+import binascii
 
 class User(AbstractUser):
 	class Meta:
+		db_table = 'users'
 		ordering = ['id']
 
-	profile_image = models.CharField(max_length=300, null=True, default="unset")
-	app_version = models.CharField(max_length=10, default="undefined", null=True)
-
+	profile_image = models.CharField(max_length=300, null=True, default="http://i.imgur.com/bVlVbb2.jpg")
+	app_version = models.DecimalField(max_digits=5, decimal_places=2, default=-1.00)
+	
 	def __unicode__(self):
 		return self.username
 
@@ -49,7 +50,7 @@ class Event(models.Model):
 	start_time = models.DateTimeField()
 	end_time = models.DateTimeField()
 	match_card = models.TextField(default="TBA")
-	status = models.CharField(max_length=1, choices=STATUS_CHOICES)
+	status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='h')
 
 	def __unicode__(self):
 		return self.name
@@ -73,7 +74,7 @@ class AccessToken(models.Model):
 
 	key = models.CharField(max_length=40, verbose_name="Token")
 	user = models.OneToOneField(User, related_name='token', on_delete=models.CASCADE, verbose_name="User")
-	expiry_date = models.DateTimeField(default=new_token_expiry_date())
+	expiry_date = models.DateTimeField(default=new_token_expiry_date)
 	created = models.DateTimeField("Created", auto_now_add=True)
 
 	def generate_key(self):
