@@ -122,6 +122,7 @@ class AuthorizedTests(APITestCase):
         
         REQUEST_CLIENT.defaults[HTTP_AUTHORIZATION] = AUTH_PREFIX + authToken
         test_response = makePostRequest(UPDATE_PROFILE_IMAGE, {'user_id': 1}, REQUEST_CLIENT)
+        # self.assertEqual(test_response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(test_response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_update_image_good(self):
@@ -147,6 +148,7 @@ class AuthorizedTests(APITestCase):
         REQUEST_CLIENT.defaults[HTTP_AUTHORIZATION] = AUTH_PREFIX + authToken
 
         test_response = makePostRequest(UPDATE_PROFILE_IMAGE, {'user_id': 5, PROFILE_IMAGE:'image.jpg'}, REQUEST_CLIENT)
+        # self.assertEqual(test_response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(test_response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_get_events(self):

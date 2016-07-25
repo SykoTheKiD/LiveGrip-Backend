@@ -48,9 +48,10 @@ def sign_up(request):
         user = serializer.create(request.data)
         if(user != None):
             token = AccessToken.objects.get(user=user)
+            token_dict = {'token': token.key, 'expiry_date':token.expiry_date}
             JSON_RESPONSE[STATUS] = SUCCESS
             JSON_RESPONSE[DATA] = UserSerializer(user).data
-            JSON_RESPONSE[DATA][TOKEN] = token.key
+            JSON_RESPONSE[DATA][TOKEN] = token_dict
             return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
     JSON_RESPONSE[STATUS] = FAIL
     JSON_RESPONSE[MESSAGE] = "Username has been taken"
@@ -73,9 +74,10 @@ def login_user(request):
                 db_token.expiry_date = new_token_expiry_date()
                 db_token.save()
                 update_last_login(None, user)
+                token_dict = {'token': db_token.key, 'expiry_date':db_token.expiry_date}
                 JSON_RESPONSE[STATUS] = SUCCESS
                 JSON_RESPONSE[DATA] = serializer.data
-                JSON_RESPONSE[DATA][TOKEN] = db_token.key
+                JSON_RESPONSE[DATA][TOKEN] = token_dict
                 return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
             else:
                 JSON_RESPONSE[STATUS] = FAIL
@@ -127,7 +129,7 @@ def events(request, app_version):
     return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,IsValidToken,IsActive,))
+@permission_classes((IsAuthenticated,IsActive,))
 def messages(request, event_id):
     """
     List all messages given a certain event
