@@ -1,7 +1,12 @@
 from django.contrib import admin
+from django.utils import timezone
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import Group
+
+from rest_framework.authtoken.models import Token
 
 from api.models import *
+from api.utils import new_token_expiry_date
 
 ## Admin Managers
 class UserAdmin(admin.ModelAdmin):
@@ -63,9 +68,32 @@ class AuthTokenAdmin(admin.ModelAdmin):
 	list_display = [field.name for field in AccessToken._meta.fields]
 	empty_value_display = '-empty-'
 
+	def activate(self, request, queryset):
+		rows_updated = queryset.update(expiry_date=new_token_expiry_date())
+		if rows_updated == 1:
+			message_bit = "1 Access Token was"
+		else:
+			message_bit = "%s Access Tokens were" % rows_updated
+		self.message_user(request, "%s successfully activated." % message_bit)
 
+	activate.short_description = "Activate selected Access Tokens"
+
+	def deactivate(self, request, queryset):
+		rows_updated = queryset.update(expiry_date=timezone.now())
+		if rows_updated == 1:
+			message_bit = "1 Access Token was"
+		else:
+			message_bit = "%s Access Tokens were" % rows_updated
+		self.message_user(request, "%s successfully deactivated." % message_bit)
+
+	deactivate.short_description = "Deactivate selected Access Tokens"
+
+	actions = [activate, deactivate]
 ## Regsiter to Admin
 admin.site.register(User, UserAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(Message, MessageAdmin)
 admin.site.register(AccessToken, AuthTokenAdmin)
+
+admin.site.unregister(Group)
+admin.site.unregister(Token)

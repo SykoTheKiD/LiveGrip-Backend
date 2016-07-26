@@ -51,6 +51,7 @@ class Event(models.Model):
 	end_time = models.DateTimeField()
 	match_card = models.TextField(default="TBA")
 	status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='h')
+	created_at = models.DateTimeField(auto_now_add=True)
 
 	def __unicode__(self):
 		return self.name
@@ -75,7 +76,7 @@ class AccessToken(models.Model):
 	key = models.CharField(max_length=40, verbose_name="Token")
 	user = models.OneToOneField(User, related_name='token', on_delete=models.CASCADE, verbose_name="User")
 	expiry_date = models.DateTimeField(default=new_token_expiry_date)
-	created = models.DateTimeField("Created", auto_now_add=True)
+	created = models.DateTimeField("Generated", auto_now_add=True)
 
 	def generate_key(self):
 		return binascii.hexlify(os.urandom(20)).decode()
@@ -87,7 +88,6 @@ class AccessToken(models.Model):
 
 	def __str__(self):
 		return self.key
-
 
 # This code is triggered whenever a new user has been created and saved to the database
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
