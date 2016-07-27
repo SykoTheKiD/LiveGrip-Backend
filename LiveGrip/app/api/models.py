@@ -19,7 +19,7 @@ class User(AbstractUser):
 	profile_image = models.CharField(max_length=300, null=True, default="http://i.imgur.com/bVlVbb2.jpg")
 	app_version = models.DecimalField(max_digits=5, decimal_places=2, default=-1.00)
 	
-	def __unicode__(self):
+	def __str__(self):
 		return self.username
 
 	def authenticate(self, username=None, password=None):
@@ -53,7 +53,7 @@ class Event(models.Model):
 	status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='h')
 	created_at = models.DateTimeField(auto_now_add=True)
 
-	def __unicode__(self):
+	def __str__(self):
 		return self.name
 
 class Message(models.Model):
