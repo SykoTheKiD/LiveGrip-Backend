@@ -74,7 +74,7 @@ class AccessToken(models.Model):
 		verbose_name_plural = "Access Tokens"
 
 	key = models.CharField(max_length=40, verbose_name="Token")
-	user = models.OneToOneField(User, related_name='token', on_delete=models.CASCADE, verbose_name="User")
+	user = models.OneToOneField(User, related_name='user', on_delete=models.CASCADE, verbose_name="User")
 	expiry_date = models.DateTimeField(default=new_token_expiry_date)
 	created = models.DateTimeField("Generated", auto_now_add=True)
 
@@ -85,6 +85,20 @@ class AccessToken(models.Model):
 		if not self.key:
 			self.key = self.generate_key()
 		return super(AccessToken, self).save(*args, **kwargs)
+
+	def __str__(self):
+		return self.key
+
+class FirebaseMessagingToken(models.Model):
+
+	class Meta:
+		db_table = "cloud_tokens"
+		verbose_name = "Firebase Token"
+		verbose_name_plural = "Firebase Tokens"
+
+	fcm_key = models.CharField(max_length=250, verbose_name="Cloud Token")
+	user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="User")
+	created = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
 		return self.key

@@ -89,11 +89,16 @@ class AuthTokenAdmin(admin.ModelAdmin):
 	deactivate.short_description = "Deactivate selected Access Tokens"
 
 	actions = [activate, deactivate]
+
+class FirebaseTokenAdmin(admin.ModelAdmin):
+	list_display = [field.name for field in FirebaseMessagingToken._meta.fields]
+	empty_value_display = '-empty-'
 ## Regsiter to Admin
 admin.site.register(User, UserAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(Message, MessageAdmin)
 admin.site.register(AccessToken, AuthTokenAdmin)
+admin.site.register(FirebaseMessagingToken, FirebaseTokenAdmin)
 
 admin.site.unregister(Group)
 admin.site.unregister(Token)
