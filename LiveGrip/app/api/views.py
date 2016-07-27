@@ -92,7 +92,7 @@ def login_user(request):
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,IsValidToken,IsActive,))
-def updateProfileImage(request):
+def update_profile_image(request):
     """
     Update the user's profile image
     """
@@ -142,7 +142,7 @@ def messages(request, event_id):
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,IsValidToken,IsActive,))
-def saveMessage(request):
+def save_message(request):
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     table_name = "event_" + str(request.data['event_id'])
     r.table(table_name).insert({ 
@@ -155,3 +155,19 @@ def saveMessage(request):
     JSON_RESPONSE[STATUS] = SUCCESS
     JSON_RESPONSE[MESSAGE] = "Saved"
     return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
+
+@api_view(['POST'])
+@permission_classes((IsAuthenticated,IsValidToken,IsActive,))
+def update_FCM_token(request):
+    JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
+    # try:
+    user_id = request.data['user_id']
+    token = request.data['access_token']
+    user = User.objects.get(id=user_id)
+    firebase_token = FirebaseMessagingToken.objects.update_or_create(user=user, defaults={'fcm_key': token})
+    JSON_RESPONSE[STATUS] = SUCCESS        
+    return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
+    # except Exception:
+    #     JSON_RESPONSE[STATUS] = FAIL
+    #     JSON_RESPONSE[MESSAGE] = "An error in your request"
+    #     return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
