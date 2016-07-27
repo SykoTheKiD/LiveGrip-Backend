@@ -17,7 +17,7 @@ class User(AbstractUser):
 		ordering = ['id']
 
 	profile_image = models.CharField(max_length=300, null=True, default="http://i.imgur.com/bVlVbb2.jpg")
-	app_version = models.DecimalField(max_digits=5, decimal_places=2, default=-1.00)
+	app_version = models.CharField(max_length=30, default="unversioned")
 	
 	def __str__(self):
 		return self.username
@@ -60,6 +60,7 @@ class Message(models.Model):
 
 	class Meta:
 		db_table = 'messages'
+		ordering = ['id']
 
 	event = models.ForeignKey(Event, verbose_name="event", on_delete=models.CASCADE)
 	user = models.ForeignKey(User, verbose_name="message user")
@@ -72,6 +73,7 @@ class AccessToken(models.Model):
 		db_table = 'access_tokens'
 		verbose_name = "Access Token"
 		verbose_name_plural = "Access Tokens"
+		ordering = ['id']
 
 	key = models.CharField(max_length=40, verbose_name="Token")
 	user = models.OneToOneField(User, related_name='user', on_delete=models.CASCADE, verbose_name="User")
@@ -95,6 +97,7 @@ class FirebaseMessagingToken(models.Model):
 		db_table = "cloud_tokens"
 		verbose_name = "Firebase Token"
 		verbose_name_plural = "Firebase Tokens"
+		ordering = ['id']
 
 	fcm_key = models.CharField(max_length=250, verbose_name="Cloud Token")
 	user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="User")
