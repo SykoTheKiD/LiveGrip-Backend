@@ -6,7 +6,12 @@ from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import Token
 
 from api.models import *
+from api.forms import SendFCMForm
 from api.utils import new_token_expiry_date
+
+import json
+
+import requests
 
 ## Admin Managers
 class UserAdmin(admin.ModelAdmin):
@@ -97,6 +102,20 @@ class FirebaseTokenAdmin(admin.ModelAdmin):
 	list_display = [field.name for field in FirebaseMessagingToken._meta.fields]
 	empty_value_display = '-empty-'
 	list_display_links = ('fcm_key')
+	action_form = SendFCMForm
+
+	def send_message(self, request, queryset):
+		title = request.POST['title']
+		body = request.POST['body']
+		notification_template = {"data":{"title": title, "body": body},"to": None}
+		for each in queryset:
+			notification_template["to"] = each.fcm_key
+			data = json.dumps(notification_template)
+			headers = {'Authorization': 'key=AIzaSyDuKEbh9tIQzt0oss9Lm7Xgwe32loARBuM','Content-Type': 'application/json'}
+			requests.post('https://fcm.googleapis.com/fcm/send', data=data, headers=headers)
+
+	actions = [send_message]
+
 ## Regsiter to Admin
 admin.site.register(User, UserAdmin)
 admin.site.register(Event, EventAdmin)
