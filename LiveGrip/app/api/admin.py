@@ -17,7 +17,7 @@ import requests
 class UserAdmin(admin.ModelAdmin):
 	list_display = ('id', 'username', 'password', 'profile_image', 'app_version' ,'last_login', 'is_active', 'date_joined')
 	empty_value_display = '-empty-'
-	list_display_links = ('username')
+	list_display_links = ('username',)
 
 	def disableAccount(self, request, queryset):
 		rows_updated = queryset.update(is_active=False)
@@ -43,7 +43,7 @@ class UserAdmin(admin.ModelAdmin):
 class EventAdmin(admin.ModelAdmin):
 	list_display = [field.name for field in Event._meta.fields]
 	empty_value_display = '-empty-'
-	list_display_links = ('name')
+	list_display_links = ('name',)
 
 	def duplicateEvent(self, request, queryset):
 		for object in queryset:
@@ -74,7 +74,7 @@ class MessageAdmin(admin.ModelAdmin):
 class AuthTokenAdmin(admin.ModelAdmin):
 	list_display = [field.name for field in AccessToken._meta.fields]
 	empty_value_display = '-empty-'
-	list_display_links = ('key')
+	list_display_links = ('key',)
 
 	def activate(self, request, queryset):
 		rows_updated = queryset.update(expiry_date=new_token_expiry_date())
@@ -101,7 +101,7 @@ class AuthTokenAdmin(admin.ModelAdmin):
 class FirebaseTokenAdmin(admin.ModelAdmin):
 	list_display = [field.name for field in FirebaseMessagingToken._meta.fields]
 	empty_value_display = '-empty-'
-	list_display_links = ('fcm_key')
+	list_display_links = ('fcm_key',)
 	action_form = SendFCMForm
 
 	def send_message(self, request, queryset):

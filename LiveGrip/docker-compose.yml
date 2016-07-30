@@ -4,7 +4,7 @@ app:
   expose:
     - "8000"
   links:
-    - postgres:postgres
+    - mysql:mysql
     - rethinkdb:rethinkdb
   volumes:
     - ./app:/usr/src/app
@@ -21,13 +21,13 @@ nginx:
   links:
     - app:app
 
-postgres:
+mysql:
   restart: always
-  build: ./postgres/
-  expose:
-    - "5432"
+  build: ./mysql/
   volumes:
-    - pgdata:/var/lib/postgresql/data/
+    - mysqldata:/var/lib/mysql
+  expose:
+    - "3306"
 
 mosquitto:
   restart: always

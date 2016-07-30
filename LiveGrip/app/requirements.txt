@@ -1,6 +1,6 @@
 django
 djangorestframework
 gunicorn
-psycopg2
+mysqlclient
 rethinkdb
 requests

@@ -17,7 +17,7 @@ class User(AbstractUser):
 		ordering = ['id']
 
 	profile_image = models.CharField(max_length=300, null=True, default="http://i.imgur.com/bVlVbb2.jpg")
-	app_version = models.CharField(max_length=30, default="unversioned")
+	app_version = models.CharField(max_length=50, default="unversioned")
 	
 	def __str__(self):
 		return self.username
