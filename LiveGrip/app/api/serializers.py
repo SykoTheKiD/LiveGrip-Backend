@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from api.models import Event, User, Message
+from api.models import *
 
 import json
 
@@ -64,3 +64,9 @@ class DatabaseMessageSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Message
 		fields = ('user', 'event', 'body')
+
+class AccessTokenSerializer(serializers.ModelSerializer):
+	expiry_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
+	class Meta:
+		model = AccessToken
+		fields = ('key', 'expiry_date')

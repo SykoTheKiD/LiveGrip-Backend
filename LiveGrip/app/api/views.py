@@ -48,10 +48,10 @@ def sign_up(request):
         user = serializer.create(request.data)
         if(user != None):
             token = AccessToken.objects.get(user=user)
-            token_dict = {'token': token.key, 'expiry_date':token.expiry_date}
+            token_serializer = AccessTokenSerializer(token)
             JSON_RESPONSE[STATUS] = SUCCESS
             JSON_RESPONSE[DATA] = UserSerializer(user).data
-            JSON_RESPONSE[DATA][TOKEN] = token_dict
+            JSON_RESPONSE[DATA][TOKEN] = token_serializer.data
             return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
     JSON_RESPONSE[STATUS] = FAIL
     JSON_RESPONSE[MESSAGE] = "Username has been taken"
@@ -73,11 +73,11 @@ def login_user(request):
                 db_token.key = AccessToken().generate_key()
                 db_token.expiry_date = new_token_expiry_date()
                 db_token.save()
+                token_serializer = AccessTokenSerializer(db_token)
                 update_last_login(None, user)
-                token_dict = {'token': db_token.key, 'expiry_date':db_token.expiry_date}
                 JSON_RESPONSE[STATUS] = SUCCESS
                 JSON_RESPONSE[DATA] = serializer.data
-                JSON_RESPONSE[DATA][TOKEN] = token_dict
+                JSON_RESPONSE[DATA][TOKEN] = token_serializer.data
                 return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
             else:
                 JSON_RESPONSE[STATUS] = FAIL
@@ -160,14 +160,14 @@ def save_message(request):
 @permission_classes((IsAuthenticated,IsValidToken,IsActive,))
 def update_FCM_token(request):
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
-    # try:
-    user_id = request.data['user_id']
-    token = request.data['access_token']
-    user = User.objects.get(id=user_id)
-    firebase_token = FirebaseMessagingToken.objects.update_or_create(user=user, defaults={'fcm_key': token})
-    JSON_RESPONSE[STATUS] = SUCCESS        
-    return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
-    # except Exception:
-    #     JSON_RESPONSE[STATUS] = FAIL
-    #     JSON_RESPONSE[MESSAGE] = "An error in your request"
-    #     return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        user_id = request.data['user_id']
+        token = request.data['access_token']
+        user = User.objects.get(id=user_id)
+        firebase_token = FirebaseMessagingToken.objects.update_or_create(user=user, defaults={'fcm_key': token})
+        JSON_RESPONSE[STATUS] = SUCCESS        
+        return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
+    except Exception:
+        JSON_RESPONSE[STATUS] = FAIL
+        JSON_RESPONSE[MESSAGE] = "An error in your request"
+        return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
