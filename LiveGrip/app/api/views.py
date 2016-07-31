@@ -26,7 +26,7 @@ Public API for LiveGrip
 """
 
 # Constants
-APP_VERSION = 1
+APP_VERSION = 1.00
 STATUS = 'status'
 DATA = 'data'
 SUCCESS = 'success'
@@ -69,6 +69,8 @@ def login_user(request):
         serializer = UserSerializer(user)
         if user is not None:
             if user.is_active:
+                user.app_version = request.data['app_version']
+                user.save()
                 db_token = AccessToken.objects.get(user=user.id)
                 db_token.key = AccessToken().generate_key()
                 db_token.expiry_date = new_token_expiry_date()
@@ -121,7 +123,7 @@ def events(request, app_version):
     """
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     JSON_RESPONSE[STATUS] = SUCCESS
-    if (int(app_version) < APP_VERSION):
+    if (float(app_version) < APP_VERSION):
             JSON_RESPONSE[MESSAGE] = "A New Version of the App is Available"
     events = Event.objects.filter(status = 'p')
     serializer = EventSerializer(events, many=True)

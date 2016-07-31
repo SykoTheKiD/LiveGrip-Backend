@@ -14,7 +14,8 @@ class UserSerializer(serializers.ModelSerializer):
 		try:
 			username = validated_data['username']
 			password = validated_data['password']
-			user = User(username=username)
+			app_version = validated_data['app_version']
+			user = User(username=username, app_version=app_version)
 			user.set_password(password)
 			try:
 				profile_image = validated_data['profile_image']
