@@ -1,6 +1,7 @@
 django
 djangorestframework
 gunicorn
-mysqlclient
+psycopg2
 rethinkdb
 requests
+argon2-cffi

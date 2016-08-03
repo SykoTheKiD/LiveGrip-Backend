@@ -4,7 +4,7 @@ app:
   expose:
     - "8000"
   links:
-    - mysql:mysql
+    - postgres:postgres
     - rethinkdb:rethinkdb
   volumes:
     - ./app:/usr/src/app
@@ -21,13 +21,13 @@ nginx:
   links:
     - app:app
 
-mysql:
+postgres:
   restart: always
-  build: ./mysql/
-  volumes:
-    - mysqldata:/var/lib/mysql
+  build: ./postgres/
   expose:
-    - "3306"
+    - "5432"
+  volumes:
+    - pgdata:/var/lib/postgresql/data/
 
 mosquitto:
   restart: always
@@ -41,4 +41,4 @@ rethinkdb:
   ports:
     - "28015:28015"
     - "29015:29015"
-    - "8080:8080"
+    - "8080:8080"   

@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'LiveGrip.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ['DB_NAME'],
         'USER': os.environ['DB_USER'],
         'PASSWORD': os.environ['DB_PASS'],
@@ -94,6 +94,14 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
+
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.BCryptPasswordHasher',
+]
 
 AUTH_PASSWORD_VALIDATORS = [
     {
