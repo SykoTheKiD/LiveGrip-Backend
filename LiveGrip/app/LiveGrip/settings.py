@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 
+API_VERSION = 'v1'
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -123,9 +125,18 @@ REST_FRAMEWORK = {
         'api.authenticators.ExpiringTokenAuthentication',
     ),
     'EXCEPTION_HANDLER': 'api.exceptions.custom_exception_handler',
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
 }
 
 AUTHENTICATION_BACKENDS = ('api.backends.CaseInsensitiveModelBackend',)
+
+# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# NOSE_ARGS = [
+#     '--with-coverage',
+#     '--cover-package=api',
+#     '--cover-html',
+# ]
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/

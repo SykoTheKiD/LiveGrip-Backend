@@ -19,10 +19,6 @@ machine:
 general:
     build_dir: LiveGrip/app
 
-test:
-    pre:
-        - ls
-
 dependencies:
     pre:
         - createdb livegrip;

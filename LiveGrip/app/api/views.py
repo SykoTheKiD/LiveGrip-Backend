@@ -14,6 +14,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import update_last_login
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
+from django.conf import settings
 
 import time
 import os
@@ -26,7 +27,6 @@ Public API for LiveGrip
 """
 
 # Constants
-APP_VERSION = 1.00
 STATUS = 'status'
 DATA = 'data'
 SUCCESS = 'success'
@@ -117,14 +117,12 @@ def update_profile_image(request):
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,IsActive,))
-def events(request, app_version):
+def events(request):
     """
     List all the Events
     """
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     JSON_RESPONSE[STATUS] = SUCCESS
-    if (float(app_version) < APP_VERSION):
-            JSON_RESPONSE[MESSAGE] = "A New Version of the App is Available"
     events = Event.objects.filter(status = 'p')
     serializer = EventSerializer(events, many=True)
     JSON_RESPONSE[DATA] = serializer.data
