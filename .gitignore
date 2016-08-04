@@ -1,2 +1,4 @@
 .vagrant/
+LiveGrip/app/htmlcov/
 *.pyc
+/LiveGrip/app/.coverage

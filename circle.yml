@@ -24,6 +24,9 @@ dependencies:
         - createdb livegrip;
 
 test:
-    post:
-        - cp -r cover/ $CIRCLE_ARTIFACTS
-        - zip -r $CIRCLE_ARTIFACTS/tests.zip $CIRCLE_ARTIFACTS/cover
+    override:
+        - python manage.py test
+        - coverage run --source='.' manage.py test
+        - coverage html
+        - cp -r htmlcov/ $CIRCLE_ARTIFACTS
+        - zip -r $CIRCLE_ARTIFACTS/tests.zip $CIRCLE_ARTIFACTS/htmlcov
