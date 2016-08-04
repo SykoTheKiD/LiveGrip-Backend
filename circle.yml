@@ -22,3 +22,8 @@ general:
 dependencies:
     pre:
         - createdb livegrip;
+
+test:
+    post:
+        - cp -r cover/ $CIRCLE_ARTIFACTS
+        - zip -r $CIRCLE_ARTIFACTS/tests.zip $CIRCLE_ARTIFACTS/cover

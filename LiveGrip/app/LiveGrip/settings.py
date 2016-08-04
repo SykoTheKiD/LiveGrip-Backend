@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_nose',
     'rest_framework',
     'rest_framework.authtoken',
     'api',
@@ -130,13 +131,13 @@ REST_FRAMEWORK = {
 
 AUTHENTICATION_BACKENDS = ('api.backends.CaseInsensitiveModelBackend',)
 
-# TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
-# NOSE_ARGS = [
-#     '--with-coverage',
-#     '--cover-package=api',
-#     '--cover-html',
-# ]
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-package=api',
+    '--cover-html',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/

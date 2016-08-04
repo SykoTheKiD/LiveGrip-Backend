@@ -5,3 +5,5 @@ psycopg2
 rethinkdb
 requests
 argon2-cffi
+django-nose
+coverage
