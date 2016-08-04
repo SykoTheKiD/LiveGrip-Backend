@@ -2,3 +2,4 @@
 LiveGrip/app/htmlcov/
 *.pyc
 /LiveGrip/app/.coverage
+/LiveGrip/app/coverage.xml

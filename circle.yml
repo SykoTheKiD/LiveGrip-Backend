@@ -28,5 +28,7 @@ test:
         - python manage.py test
         - coverage run --source='.' manage.py test
         - coverage html
+        - coverage xml
+        - cp coverage.xml $CIRCLE_TEST_REPORTS
         - cp -r htmlcov/ $CIRCLE_ARTIFACTS
         - zip -r $CIRCLE_ARTIFACTS/tests.zip $CIRCLE_ARTIFACTS/htmlcov
