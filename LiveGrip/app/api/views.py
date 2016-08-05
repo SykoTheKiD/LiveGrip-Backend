@@ -47,6 +47,7 @@ def sign_up(request):
     if serializer.is_valid():
         user = serializer.create(request.data)
         if(user != None):
+            update_last_login(None, user)
             token = AccessToken.objects.get(user=user)
             token_serializer = AccessTokenSerializer(token)
             JSON_RESPONSE[STATUS] = SUCCESS

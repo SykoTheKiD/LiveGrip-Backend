@@ -1,0 +1,39 @@
+{
+  "matches": [
+    {
+      "segment_name": "Dean Ambrose vs. AJ Styles",
+      "rating": 5,
+      "additional_detail": "WWE Championship"
+    },
+    {
+      "segment_name": "The Miz vs. Zack Ryder",
+      "rating": "3",
+      "additional_detail": "Intercontinental Championship"
+    },
+    {
+      "segment_name": "Rusev vs. Kalisto",
+      "rating": "1",
+      "additional_detail": "US Championship"
+    },
+    {
+      "segment_name": "Finn Balor vs. Seth Rollins",
+      "rating": "5",
+      "additional_detail": "WWE Universal Championship"
+    },
+    {
+      "segment_name": "New Day vs. Wyatt Family",
+      "rating": "4",
+      "additional_detail": "One Fall"
+    },
+    {
+      "segment_name": "Roman Reigns vs. John Cena",
+      "rating": "2",
+      "additional_detail": "One Fall"
+    },
+    {
+      "segment_name": "Roman Reigns vs. John Cena",
+      "rating": "5",
+      "additional_detail": "One Fall"
+    }
+  ]
+}
