@@ -1,3 +1,3 @@
-[![Build Status](https://travis-ci.com/SykoTheKiD/WrestleChatBackend.svg?token=2yEAfyksPsYtz7mCSf1C&branch=master)](https://travis-ci.com/SykoTheKiD/WrestleChatBackend)
+[![CircleCI](https://circleci.com/bb/SykoTheKiD/wrestlechat-backend/tree/master.svg?style=svg)](https://circleci.com/bb/SykoTheKiD/wrestlechat-backend/tree/master)
 # WrestleChatBackend
 Backend API for WrestleChat
