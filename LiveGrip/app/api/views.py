@@ -33,6 +33,8 @@ SUCCESS = 'success'
 FAIL = 'fail'
 MESSAGE = 'message'
 TOKEN = 'token'
+LAST_MESSAGES = 50
+LAST_MESSAGES_OFFSET = 10
 
 CONN = r.connect(host="rethinkdb", db='livegrip_messages') if os.getenv('CI') == 'false' else None
 
@@ -131,14 +133,26 @@ def events(request):
 
 @api_view(['GET'])
 @permission_classes((IsAuthenticated,IsActive,))
-def messages(request, event_id):
+def get_last_messages(request, event_id):
     """
     List all messages given a certain event
     """
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     table_name = "event_" + str(event_id)
     JSON_RESPONSE[STATUS] = SUCCESS
-    JSON_RESPONSE[DATA] = r.table(table_name).order_by(r.desc('message_id')).limit(10).run(CONN)
+    JSON_RESPONSE[DATA] = r.table(table_name).order_by(r.desc('message_id')).limit(LAST_MESSAGES).run(CONN)
+    return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes((IsAuthenticated,IsActive,))
+def get_messagage_history(request, event_id, offset):
+    """
+    Get last 10 messages from index
+    """
+    JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
+    table_name = "event_" + str(event_id)
+    JSON_RESPONSE[STATUS] = SUCCESS
+    JSON_RESPONSE[DATA] = r.table(table_name).order_by(r.desc('message_id')).limit(LAST_MESSAGES_OFFSET).skip(LAST_MESSAGES+LAST_MESSAGES_OFFSET*offset).run(CONN)
     return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
@@ -146,16 +160,21 @@ def messages(request, event_id):
 def save_message(request):
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     table_name = "event_" + str(request.data['event_id'])
-    r.table(table_name).insert({ 
-        'username': request.data['username'], 
-        'profile_image': request.data['profile_image'], 
-        'event_id': request.data['event_id'], 
-        'user_id': request.data['user_id'],
-        'body': request.data['body'],
-        'message_id': int(round(time.time() * 1000))}).run(CONN)
-    JSON_RESPONSE[STATUS] = SUCCESS
-    JSON_RESPONSE[MESSAGE] = "Saved"
-    return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
+    try:
+        r.table(table_name).insert({ 
+            'username': request.data['username'], 
+            'profile_image': request.data['profile_image'], 
+            'event_id': request.data['event_id'], 
+            'user_id': request.data['user_id'],
+            'body': request.data['body'],
+            'message_id': int(round(time.time() * 1000))}).run(CONN)
+        JSON_RESPONSE[STATUS] = SUCCESS
+        JSON_RESPONSE[MESSAGE] = "Saved"
+        return Response(JSON_RESPONSE, status=status.HTTP_201_CREATED)
+    except Exception:
+        JSON_RESPONSE[STATUS] = FAIL
+        JSON_RESPONSE[MESSAGE] = "An error in your request"
+        return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 @permission_classes((IsAuthenticated,IsValidToken,IsActive,))

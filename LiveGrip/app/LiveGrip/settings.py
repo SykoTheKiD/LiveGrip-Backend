@@ -27,8 +27,6 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.getenv('DEBUG') == 'true' else False
 
-ALLOWED_HOSTS = ['*']
-
 AUTH_USER_MODEL = 'api.User'
 
 USE_TZ = True
