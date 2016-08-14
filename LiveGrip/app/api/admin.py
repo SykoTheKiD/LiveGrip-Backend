@@ -111,7 +111,7 @@ class FirebaseTokenAdmin(admin.ModelAdmin):
 		for each in queryset:
 			notification_template["to"] = each.fcm_key
 			data = json.dumps(notification_template)
-			headers = {'Authorization': 'key=AIzaSyDuKEbh9tIQzt0oss9Lm7Xgwe32loARBuM','Content-Type': 'application/json'}
+			headers = {'Authorization': 'key=AIzaSyAaeSoULJt5-ecaZtboA4AdmJqAtdSuuZ4','Content-Type': 'application/json'}
 			requests.post('https://fcm.googleapis.com/fcm/send', data=data, headers=headers)
 
 	actions = [send_message]

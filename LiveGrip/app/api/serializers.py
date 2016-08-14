@@ -32,7 +32,7 @@ class EventSerializer(serializers.ModelSerializer):
 	end_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S")
 	class Meta:
 		model = Event
-		fields = ('id','name', 'info', 'image','location', 'start_time', 'end_time', 'match_card')
+		fields = ('id','name', 'info', 'image','location', 'event_video', 'start_time', 'end_time', 'match_card')
 
 class MessageSerializer():
 	def __init__(self, request):

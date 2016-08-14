@@ -151,8 +151,9 @@ def get_messagage_history(request, event_id, offset):
     """
     JSON_RESPONSE = {STATUS: None, DATA: None, MESSAGE: None}
     table_name = "event_" + str(event_id)
+    skip_offset = LAST_MESSAGES + LAST_MESSAGES_OFFSET * int(offset)
     JSON_RESPONSE[STATUS] = SUCCESS
-    JSON_RESPONSE[DATA] = r.table(table_name).order_by(r.desc('message_id')).limit(LAST_MESSAGES_OFFSET).skip(LAST_MESSAGES+LAST_MESSAGES_OFFSET*offset).run(CONN)
+    JSON_RESPONSE[DATA] = r.table(table_name).order_by(r.desc('message_id')).skip(skip_offset).limit(LAST_MESSAGES_OFFSET).run(CONN)
     return Response(JSON_RESPONSE, status=status.HTTP_200_OK)
 
 @api_view(['POST'])

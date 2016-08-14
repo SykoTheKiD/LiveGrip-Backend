@@ -50,6 +50,7 @@ class Event(models.Model):
 	start_time = models.DateTimeField()
 	end_time = models.DateTimeField()
 	match_card = models.TextField(default="TBA")
+	event_video = models.CharField(max_length=30, default="None")
 	status = models.CharField(max_length=1, choices=STATUS_CHOICES, default='h')
 	created_at = models.DateTimeField(auto_now_add=True)
 
@@ -104,7 +105,7 @@ class FirebaseMessagingToken(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
-		return self.key
+		return self.fcm_key
 
 # This code is triggered whenever a new user has been created and saved to the database
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
