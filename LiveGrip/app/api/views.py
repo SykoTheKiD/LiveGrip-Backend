@@ -93,6 +93,7 @@ def login_user(request):
             JSON_RESPONSE[MESSAGE] = "User not found"
             return Response(JSON_RESPONSE, status=status.HTTP_404_NOT_FOUND)
     except KeyError:
+        JSON_RESPONSE[MESSAGE] = "bad request data"
         return Response(JSON_RESPONSE, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])

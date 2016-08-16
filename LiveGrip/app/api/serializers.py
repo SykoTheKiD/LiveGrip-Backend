@@ -13,16 +13,17 @@ class UserSerializer(serializers.ModelSerializer):
 		user = None
 		try:
 			username = validated_data['username']
-			password = validated_data['password']
-			app_version = validated_data['app_version']
-			user = User(username=username, app_version=app_version)
-			user.set_password(password)
-			try:
-				profile_image = validated_data['profile_image']
-				user.profile_image = profile_image
-			except KeyError:
-				user.profile_image = "http://i.imgur.com/bVlVbb2.jpg"
-			user.save()
+			if(not(User.objects.filter(username__iexact=username).exists())):
+				password = validated_data['password']
+				app_version = validated_data['app_version']
+				user = User(username=username, app_version=app_version)
+				user.set_password(password)
+				try:
+					profile_image = validated_data['profile_image']
+					user.profile_image = profile_image
+				except KeyError:
+					user.profile_image = "http://i.imgur.com/bVlVbb2.jpg"
+				user.save()
 			return user
 		except KeyError:
 			return user
